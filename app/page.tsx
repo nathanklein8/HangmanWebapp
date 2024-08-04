@@ -1,74 +1,124 @@
 "use client"
 
+import { CustomConfetti } from "@/components/custom-confetti";
 import { ModeToggle } from "@/components/mode-toggle";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  InputOTP,
-  InputOTPGroup,
-  InputOTPSeparator,
-  InputOTPSlot,
-} from "@/components/ui/input-otp"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { dead } from "@/lib/hungmen";
-import { LucideCheckCheck } from "lucide-react";
+import { AlertTriangle, CheckCheck } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
+
 export default function Home() {
 
+  const [guesses, setGuesses] = useState<Set<string>>(new Set)
   const [guess, setGuess] = useState<string | null>(null)
-  const [guesses, setGuesses] = useState<string[]>([])
+  const [secretPhrase, setSecretPhrase] = useState<string>("I love Applesauce")
+  const [victory, setVictory] = useState<boolean>(false)
 
-  const regex = /^[a-zA-Z]+$/;
+  const isValid = (guess: string) => {
+    return /^[A-Z]$/.test(guess) && !guesses.has(guess)
+  }
+
+  const getHiddenPhrase = (phrase: string, show: Set<string>): string => {
+    return phrase.toUpperCase().replace(/[A-Z]/g, char => show.has(char) ? char : '_');
+  }
+
+  const doConfetti = () => {
+    setVictory(true);
+    setTimeout(() => setVictory(false), 1000);
+  };
 
   return (
     <>
-      <div className="flex justify-between">
-        <div className="flex grow max-w-10"></div>
+      <CustomConfetti active={victory}/>
 
-        <div className="flex grow justify-center text-center">
-          <h1 className="text-3xl font-bold italic underline">Hangman</h1>
+      {/* header */}
+      <div className="flex justify-between p-2 px-4">
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant="destructive" size="icon"><AlertTriangle /></Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-fit">
+            <div className="flex flex-row gap-2">
+
+              <Button
+                variant="destructive"
+                onClick={() => {
+                  const chars = new Set(secretPhrase.toUpperCase())
+                  setGuesses(chars)
+                }}>Reveal</Button>
+              <Button
+                variant="destructive"
+                onClick={() => {
+                  setGuesses(new Set)
+                }}>Reset</Button>
+            </div>
+          </PopoverContent>
+        </Popover>
+        <div className="flex grow max-w-fit justify-center text-center animate-pulse rounded-md bg-primary/10">
+          <a href="https://github.com/nathanklein8" target="_blank" rel="noopener noreferrer">
+            <Button variant='link' className="text-5xl font-bold p-0 m-3">Hangman</Button>
+          </a>
         </div>
-
-        <ModeToggle />
+        <div className="flex grow max-w-10">
+          <ModeToggle />
+        </div>
       </div>
 
+      {/* graphic */}
       {dead()}
 
+      <div className="flex justify-center my-4 tracking-widest text-2xl">
+        {getHiddenPhrase(secretPhrase, guesses)}
+      </div>
+
+      {/* input area */}
       <div className="flex items-center justify-center gap-2 m-4">
         <Input
+          value={guess ? guess : ''}
           maxLength={1}
-          className="max-w-10 text-center "
-          onKeyDown={(event) => {
-            if (event.key.length == 1) {
-              setGuess(event.key.toUpperCase())
+          className="max-w-10 text-center border-solid"
+          onChange={(event) => {
+            const g = event.target.value.toUpperCase()
+            if (isValid(g)) {
+              setGuess(g)
+              console.log('triggering')
+            } else {
+              setGuess(null)
             }
           }}
-          onBlur={(event) => {
-            event.target.value=""
-          }}/>
+        />
         <Button
-          size="icon"
+          size="icon" variant="secondary"
           disabled={!guess}
           onClick={() => {
-            if (guess && !guesses.includes(guess) && regex.test(guess)) {
-              setGuesses([...guesses, guess])
-            } else {
-              toast("Invalid Guess")
+            if (guess) {
+              setGuesses(guesses.add(guess))
+              setGuess(null)
             }
           }}>
-          <LucideCheckCheck />
+          <CheckCheck color={guess ? "#00ee00" : "#ee0000"} />
         </Button>
       </div>
 
-      <div className="flex flex-row justify-center py-4 gap-3">
-        {guesses.map((guess) => {
-          return (
-            <p key={guess}>
-              {guess}
-            </p>
-          )
-        })}
+      {/* guess history */}
+      <div className="flex justify-center mb-2">
+        <div className="grid grid-cols-6 min-w-40 justify-center gap-2">
+          {Array.from(guesses).map((guess) => {
+            return (
+              <div key={guess} className="flex justify-center">
+                {guess}
+              </div>
+            )
+          })}
+        </div>
+      </div>
+
+      <div className="flex justify-center my-10">
+        <Button onClick={doConfetti}>test confetti</Button>
       </div>
 
     </>
