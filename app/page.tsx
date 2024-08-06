@@ -79,8 +79,8 @@ export default function Home() {
 
   return (
     <>
-      <div className="flex justify-between items-start p-2 mb-2">
-        <div className="flex grow max-w-40">
+      <div className="flex justify-between p-2 mb-2 gap-4">
+        <div className="flex grow justify-end gap-2">
           <a href="https://github.com/nathanklein8/" target="_blank" rel="noopener noreferrer">
             <Button variant="outline" size="icon"><LucideGithub /></Button>
           </a>
@@ -88,8 +88,10 @@ export default function Home() {
             <Button variant="outline" size="icon"><LucideLinkedin /></Button>
           </a>
         </div>
-        <h1 className="text-4xl font-bold italic underline text-center">Hangman</h1>
-        <div className="flex flex-row grow max-w-40 justify-end gap-2">
+        <div className="flex max-w-fit justify-center">
+          <h1 className="text-4xl font-bold italic underline">Hangman</h1>
+        </div>
+        <div className="flex grow justify-start gap-2">
           <ModeToggle />
           <Popover>
             <PopoverTrigger asChild>
@@ -144,13 +146,18 @@ export default function Home() {
             const g = event.target.value.toUpperCase()
             !guesses.has(g) && /^[A-Z]$/.test(g) ? setGuess(g) : setGuess(null)
           }}
+          onKeyDown={(event) => {
+            if (event.key == 'Enter' && guess) {
+              submitGuess()
+            }
+          }}
         />
         <Confetti active={confettiTrigger} />
         <Button
-          size="icon" variant="secondary"
+          size="icon" variant={!guess ? "secondary" : "default"}
           disabled={!guess}
           onClick={submitGuess}>
-          {guess ? <ChevronsUp color="green" /> : <MessageCircleQuestion />}
+          {guess ? <ChevronsUp/> : <MessageCircleQuestion/>}
         </Button>
       </div>
 
