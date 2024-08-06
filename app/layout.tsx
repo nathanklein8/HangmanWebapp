@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
-import { Inter as FontSans } from "next/font/google";
+import localFont from 'next/font/local'
 import "../globals.css";
 
 import { cn } from "@/lib/utils"
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "sonner";
  
-const fontSans = FontSans({
-  subsets: ["latin"],
+const fontSans = localFont({
+  src: "../public/fonts/inter.woff2",
   variable: "--font-sans",
 })
 
@@ -28,7 +28,7 @@ export default function RootLayout({
       >
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
+          defaultTheme="dark"
           enableSystem
           disableTransitionOnChange
         >
