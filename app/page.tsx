@@ -8,7 +8,6 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { ChevronsUp, LucideGithub, LucideLinkedin, MessageCircleQuestion, Wrench } from "lucide-react"
 import { useState } from "react"
 import Confetti from "react-dom-confetti"
-import { toast } from "sonner"
 
 
 export default function Home() {

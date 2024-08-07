@@ -1,13 +1,12 @@
 import type { Metadata } from "next";
 import localFont from 'next/font/local'
-import "../globals.css";
+import "../styles/globals.css";
 
 import { cn } from "@/lib/utils"
 import { ThemeProvider } from "@/components/theme-provider";
-import { Toaster } from "sonner";
  
 const fontSans = localFont({
-  src: "../public/fonts/inter.woff2",
+  src: "../styles/fonts/inter.woff2",
   variable: "--font-sans",
 })
 
@@ -29,11 +28,9 @@ export default function RootLayout({
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
-          enableSystem
           disableTransitionOnChange
         >
           {children}
-          <Toaster />
         </ThemeProvider>
       </body>
     </html>
