@@ -8,6 +8,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { ChevronsUp, LucideGithub, LucideLinkedin, MessageCircleQuestion, Wrench } from "lucide-react"
 import { useState } from "react"
 import Confetti from "react-dom-confetti"
+import { inherits } from "util"
 
 
 export default function Home() {
@@ -38,10 +39,6 @@ export default function Home() {
     setGameState(0)
   }
 
-  const getHiddenPhrase = (phrase: string, show: Set<string>): string => {
-    return phrase.toUpperCase().replace(/[A-Z]/g, char => show.has(char) ? char : '_')
-  }
-
   const isGameWon = () => {
     const phrase = secretPhrase.toUpperCase().replaceAll(' ', '')
     for (let char of phrase) {
@@ -53,13 +50,11 @@ export default function Home() {
   const submitGuess = () => {
     // add guess to set
     setGuesses(guesses.add(guess!))
-
     // increment game state if guess was wrong
     if (!secretPhrase.toUpperCase().includes(guess!)) {
       const newState = gameState + 1
       setGameState(newState)
       if (newState == gameOverState) {
-        console.log('reavleaing')
         revealPuzzle()
       }
     } else {
@@ -69,16 +64,48 @@ export default function Home() {
         setGameState(victoryState)
       }
     }
-
     // reset guess back to empty
     setGuess(null)
   }
 
+  const HiddenPhrase = () => {
+    const text = secretPhrase.toUpperCase().replace(/[A-Z]/g, char => guesses.has(char) ? char : '_')
+    return (
+      <div className="flex justify-center space-x text-2xl">
+        {Array.from(text).map((char, i) => {
 
+          return (
+            <div key={i} className="min-w-6 text-center">
+              {char}
+            </div>
+          )
+
+        })}
+      </div>
+    )
+  }
+
+  const GuessGraveyard = () => {
+    return (
+      <div className="flex justify-center">
+        <div className="grid grid-cols-6 min-w-40 justify-center gap-2">
+          {Array.from(guesses).map((guess) => {
+            if (!secretPhrase.toUpperCase().includes(guess)) {
+              return (
+                <div key={guess} className="flex justify-center">
+                  {guess}
+                </div>
+              )
+            }
+          })}
+        </div>
+      </div>
+    )
+  }
 
   return (
-    <>
-      <div className="flex justify-between p-2 mb-2 gap-4">
+    <div className="flex flex-col space-y-2">
+      <div className="flex justify-between p-2 gap-4">
         <div className="flex grow justify-end gap-2">
           <a href="https://github.com/nathanklein8/" target="_blank" rel="noopener noreferrer">
             <Button variant="outline" size="icon"><LucideGithub /></Button>
@@ -121,21 +148,16 @@ export default function Home() {
       </div>
 
       {gameState == gameOverState ?
-        <p className="text-center text-xl">Game Over</p> : <></>
+        <p className="text-center text-xl font-bold text-red-600 dark:text-red-500">Game Over</p> : <></>
       }
 
-      <div className="flex justify-center my-4">
+      <div className="flex justify-center">
         <HungMan size={128} gameState={gameState} />
       </div>
 
-      <div className="flex justify-center tracking-widest text-2xl">
-        <p className="max-w-96 text-center">
-          {getHiddenPhrase(secretPhrase, guesses)}
-        </p>
-      </div>
+      <HiddenPhrase />
 
-
-      <div className="flex items-end justify-center gap-2 m-4">
+      <div className="flex items-end justify-center gap-2">
         <Input
           value={guess ? guess : ''}
           maxLength={1}
@@ -156,32 +178,27 @@ export default function Home() {
           size="icon" variant={!guess ? "secondary" : "default"}
           disabled={!guess}
           onClick={submitGuess}>
-          {guess ? <ChevronsUp/> : <MessageCircleQuestion/>}
+          {guess ? <ChevronsUp /> : <MessageCircleQuestion />}
         </Button>
       </div>
 
-      <div className="flex justify-center mb-2">
-        <div className="grid grid-cols-6 min-w-40 justify-center gap-2">
-          {Array.from(guesses).map((guess) => {
-            if (!secretPhrase.toUpperCase().includes(guess)) {
-              return (
-                <div key={guess} className="flex justify-center">
-                  {guess}
-                </div>
-              )
-            }
-          })}
-        </div>
-      </div>
+      <GuessGraveyard/>
 
       {gameState == victoryState || gameState == gameOverState ?
-        <div className="flex justify-center">
-          <Button variant="destructive" onClick={resetPuzzle}>
-            Reset Puzzle
-          </Button>
-        </div>
+        <>
+          <div className="flex justify-center">
+            <Button variant="destructive" onClick={resetPuzzle}>
+              Reset Puzzle
+            </Button>
+          </div>
+          <div className="flex flex-row justify-center items-center gap-1 text-muted-foreground italic">
+            Hint: change the secret phrase in the
+            <Wrench size={20} />
+            menu
+          </div>
+        </>
         : <></>}
 
-    </>
+    </div>
   )
 }

@@ -5,7 +5,7 @@ import * as React from "react";
 const HungMan = (props: {
   size: number, gameState: number,
 }) => {
-  const { theme } = useTheme()
+  const { theme = "dark" } = useTheme()
   const color = (theme == "dark") ? "#F5F5F5" : "#313131"
 
   const head = <circle cx={18} cy={9} r={4} key={0} className="animated-path animate-draw-line"/>
