@@ -8,7 +8,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { ChevronsUp, LucideGithub, LucideLinkedin, MessageCircleQuestion, Wrench } from "lucide-react"
 import { useState } from "react"
 import Confetti from "react-dom-confetti"
-import { inherits } from "util"
+import { cn } from "@/lib/utils"
 
 
 export default function Home() {
@@ -19,7 +19,7 @@ export default function Home() {
   const [confettiTrigger, setConfettiTrigger] = useState<boolean>(false)
   const [gameState, setGameState] = useState<number>(0)
 
-  const gameOverState = 6
+  const failState = 6
   const victoryState = -1
 
   const launchConfetti = () => {
@@ -29,8 +29,8 @@ export default function Home() {
 
   const revealPuzzle = () => {
     const chars = new Set(secretPhrase.toUpperCase().replaceAll(' ', ''))
-    setGuesses(chars)
-    setGameState(gameOverState)
+    //setGuesses(chars)
+    setGameState(failState)
   }
 
   const resetPuzzle = () => {
@@ -54,7 +54,7 @@ export default function Home() {
     if (!secretPhrase.toUpperCase().includes(guess!)) {
       const newState = gameState + 1
       setGameState(newState)
-      if (newState == gameOverState) {
+      if (newState == failState) {
         revealPuzzle()
       }
     } else {
@@ -69,13 +69,15 @@ export default function Home() {
   }
 
   const HiddenPhrase = () => {
-    const text = secretPhrase.toUpperCase().replace(/[A-Z]/g, char => guesses.has(char) ? char : '_')
+    const text = (gameState == failState)
+      ? secretPhrase.toUpperCase()
+      : secretPhrase.toUpperCase().replace(/[A-Z]/g, char => guesses.has(char) ? char : '_')
     return (
       <div className="flex justify-center space-x text-2xl">
         {Array.from(text).map((char, i) => {
-
+          const color = (gameState == failState && !guesses.has(char)) ? "text-red-600 dark:text-red-500" : ""
           return (
-            <div key={i} className="min-w-6 text-center">
+            <div key={i} className={cn("min-w-6 text-center", color)}>
               {char}
             </div>
           )
@@ -147,8 +149,8 @@ export default function Home() {
         </div>
       </div>
 
-      {gameState == gameOverState ?
-        <p className="text-center text-xl font-bold text-red-600 dark:text-red-500">Game Over</p> : <></>
+      {gameState == failState ?
+        <p className="text-center text-xl text-red-600 dark:text-red-500">Game Over</p> : <></>
       }
 
       <div className="flex justify-center">
@@ -162,7 +164,7 @@ export default function Home() {
           value={guess ? guess : ''}
           maxLength={1}
           className="max-w-10 text-center border-solid"
-          disabled={gameState == victoryState || gameState == gameOverState}
+          disabled={gameState == victoryState || gameState == failState}
           onChange={(event) => {
             const g = event.target.value.toUpperCase()
             !guesses.has(g) && /^[A-Z]$/.test(g) ? setGuess(g) : setGuess(null)
@@ -182,18 +184,18 @@ export default function Home() {
         </Button>
       </div>
 
-      <GuessGraveyard/>
+      <GuessGraveyard />
 
-      {gameState == victoryState || gameState == gameOverState ?
+      {gameState == victoryState || gameState == failState ?
         <>
           <div className="flex justify-center">
             <Button variant="destructive" onClick={resetPuzzle}>
               Reset Puzzle
             </Button>
           </div>
-          <div className="flex flex-row justify-center items-center gap-1 text-muted-foreground italic">
+          <div className="flex flex-row justify-center items-center gap-1 text-sm text-muted-foreground italic">
             Hint: change the secret phrase in the
-            <Wrench size={20} />
+            <Wrench size={16} />
             menu
           </div>
         </>
