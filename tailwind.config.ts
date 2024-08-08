@@ -2,19 +2,6 @@ import type { Config } from "tailwindcss"
 
 const { fontFamily } = require("tailwindcss/defaultTheme")
 
-// /** @type {import('tailwindcss').Config} */
-// module.exports = {
-//   darkMode: ["class"],
-//   content: ["app/**/*.{ts,tsx}", "components/**/*.{ts,tsx}"],
-//   theme: {
-//     extend: {
-      // fontFamily: {
-      //   sans: ["var(--font-sans)", ...fontFamily.sans],
-      // },
-//     },
-//   },
-// }
-
 const config = {
   darkMode: ["class"],
   content: [
@@ -22,7 +9,7 @@ const config = {
     './components/**/*.{ts,tsx}',
     './app/**/*.{ts,tsx}',
     './src/**/*.{ts,tsx}',
-	],
+  ],
   prefix: "",
   theme: {
     container: {
@@ -85,8 +72,13 @@ const config = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+        drawLine: {
+          from: { strokeDashoffset: "25" },
+          to: { strokeDashoffset: "0" }
+        }
       },
       animation: {
+        "draw-line": "drawLine 1s linear",
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
       },
