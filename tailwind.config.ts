@@ -13,7 +13,8 @@ const config = {
   prefix: "",
   theme: {
     letterSpacing: {
-      widest: '.2em'
+      widest: '.2em',
+      tightest: '-.2em',
     },
     container: {
       center: true,
