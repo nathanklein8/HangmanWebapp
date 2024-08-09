@@ -63,6 +63,7 @@
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
   }
@@ -72,4 +73,25 @@
   .animated-path {
     stroke-dasharray: 25;
   }
+  .animated-div {
+    transition: all 2s, color 0.25s linear;
+    transition-delay: 500
+  }
+  .text-glow-dark {
+    text-shadow: 0 0 12px #000000, 0 0 20px #890000, 0 0 42px #ff0000;
+    animation: glow-dark 2s linear;
+  }
+  .text-glow {
+    text-shadow: 0 0 12px #ffffff, 0 0 20px #ff6e6e, 0 0 42px #ff0000;
+    animation: glow 2s linear;
+  }
+}
+
+@keyframes glow-dark {
+  from { text-shadow: none; }
+  to { text-shadow: 0 0 12px #000000, 0 0 20px #890000, 0 0 42px #ff0000; }
+}
+@keyframes glow {
+  from { text-shadow: none; }
+  to { text-shadow: 0 0 12px #ffffff, 0 0 20px #ff6e6e, 0 0 42px #ff0000; }
 }

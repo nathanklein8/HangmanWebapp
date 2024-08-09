@@ -4,12 +4,13 @@ import HungMan from "@/components/hung-man"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { ChevronsUp, LucideGithub, LucideLinkedin, MessageCircleQuestion, Wrench } from "lucide-react"
+import { ArrowUp, LucideGithub, LucideLinkedin, MessageCircleQuestion, RefreshCcw, Wrench } from "lucide-react"
 import { useState } from "react"
 import Confetti from "react-dom-confetti"
 import { cn } from "@/lib/utils"
 import ModeToggle from "@/components/mode-toggle"
-
+import { failState } from "@/lib/utils"
+import { RenderPhrase } from "@/components/render"
 
 export default function Home() {
 
@@ -17,10 +18,8 @@ export default function Home() {
   const [guess, setGuess] = useState<string | null>(null)
   const [secretPhrase, setSecretPhrase] = useState<string>("I love Applesauce!")
   const [confettiTrigger, setConfettiTrigger] = useState<boolean>(false)
-  const [gameState, setGameState] = useState<number>(0)
-
-  const failState = 6
-  const victoryState = -1
+  const [numIncorrect, setNumIncorrect] = useState<number>(0)
+  const [isVictory, setIsVictory] = useState<boolean>(false)
 
   const launchConfetti = () => {
     setConfettiTrigger(true)
@@ -35,71 +34,29 @@ export default function Home() {
     return true
   }
 
+  const ResetPuzzle = () => {
+    setGuess(null)
+    setGuesses(new Set)
+    setNumIncorrect(0)
+    setIsVictory(false)
+  }
+
   const submitGuess = () => {
     // add guess to set
     setGuesses(guesses.add(guess!))
     // increment game state if guess was wrong
     if (!secretPhrase.toUpperCase().includes(guess!)) {
-      const newState = gameState + 1
-      setGameState(newState)
+      const newNum = numIncorrect + 1
+      setNumIncorrect(newNum)
     } else {
       // check if the game was won
       if (isGameWon()) {
         launchConfetti()
-        setGameState(victoryState)
+        setIsVictory(true)
       }
     }
     // reset guess back to empty
     setGuess(null)
-  }
-
-  const HiddenPhrase = () => {
-    const text = (gameState == failState)
-      ? secretPhrase.toUpperCase()
-      : secretPhrase.toUpperCase().replace(/[A-Z]/g, char => guesses.has(char) ? char : '_')
-    const words = text.split(' ')
-    return (
-      <div className="flex flex-row justify-center">
-        <div className="flex grow"></div>
-        <div className="flex flex-wrap justify-center text-2xl max-w-[650px] g-blue-400">
-          {words.map((word, i) => {
-            return (
-              <div key={i} className="flex flex-row gap-0 mx-1 g-red-600">
-                {Array.from(word).map((char, i) => {
-                  const color = (gameState == failState && !guesses.has(char) && /^[A-Z]$/.test(char)) ? "text-red-600 dark:text-red-500" : ""
-                  const lessSpacingChars = ".,?!-()$%#'\""
-                  const spacing = lessSpacingChars.includes(char) ? "min-w-1" : (char == ' ' ? "min-w-4" : "min-w-[28px] ml-1")
-                  return (
-                    <div key={i} className={cn("text-center g-green-300", color, spacing)}>
-                      {(char == '_') ? '__' : char}
-                    </div>
-                  )
-                })}
-              </div>
-            )
-          })}
-        </div>
-        <div className="flex grow"></div>
-      </div>
-    )
-  }
-
-  const GuessGraveyard = () => {
-    return (
-      <div className="flex justify-center">
-        <div className="grid grid-cols-6 min-w-40 justify-center gap-2">
-          {Array.from(guesses).map((guess) => {
-            if (!secretPhrase.toUpperCase().includes(guess)) {
-              return (
-                <div key={guess} className="flex justify-center">
-                  {guess}
-                </div>
-              )
-            }
-          })}
-        </div>
-      </div>
-    )
   }
 
   return (
@@ -127,16 +84,14 @@ export default function Home() {
                 <Button
                   className="w-full"
                   variant="destructive"
-                  disabled={gameState == victoryState}
-                  onClick={() => { setGameState(failState) }}>Reveal</Button>
+                  disabled={isVictory || numIncorrect == failState}
+                  onClick={() => {
+                    setNumIncorrect(failState)
+                  }}>Reveal</Button>
                 <Button
                   className="w-full"
                   variant="destructive"
-                  onClick={() => {
-                    setGuess(null)
-                    setGuesses(new Set)
-                    setGameState(0)
-                  }}>Reset</Button>
+                  onClick={() => { ResetPuzzle() }}>Reset</Button>
               </div>
               <div className="flex flex-row gap-2">
                 <Input
@@ -151,16 +106,16 @@ export default function Home() {
         </div>
       </div>
 
-      <HungMan size={128} gameState={gameState} failState={failState} />
+      <HungMan size={128} numIncorrect={numIncorrect} />
 
-      <HiddenPhrase />
+      <RenderPhrase phrase={secretPhrase} guesses={guesses} isVictory={isVictory} state={numIncorrect} />
 
-      <div className="flex items-end justify-center gap-2">
+      <div className="flex items-center justify-center gap-1">
         <Input
           value={guess ? guess : ''}
           maxLength={1}
-          className="max-w-10 text-center border-solid"
-          disabled={gameState == victoryState || gameState == failState}
+          className="max-w-10 text-center"
+          disabled={isVictory  || numIncorrect == failState}
           onChange={(event) => {
             const g = event.target.value.toUpperCase()
             !guesses.has(g) && /^[A-Z]$/.test(g) ? setGuess(g) : setGuess(null)
@@ -176,25 +131,36 @@ export default function Home() {
           size="icon" variant={!guess ? "secondary" : "default"}
           disabled={!guess}
           onClick={submitGuess}>
-          {guess ? <ChevronsUp /> : <MessageCircleQuestion />}
+          {guess ? <ArrowUp /> : <MessageCircleQuestion />}
         </Button>
       </div>
 
-      <GuessGraveyard />
+      <div className="flex justify-center">
+        <div className="grid grid-cols-6 min-w-40 justify-center gap-2">
+          {Array.from(guesses).map((guess) => {
+            if (!secretPhrase.toUpperCase().includes(guess)) {
+              return (
+                <div key={guess} className="flex justify-center">
+                  {guess}
+                </div>
+              )
+            }
+          })}
+        </div>
+      </div>
 
-      {gameState == victoryState || gameState == failState ?
+      {isVictory || numIncorrect == failState ?
         <>
-          <div className="flex justify-center">
-            <Button onClick={() => {
-              setGuess(null)
-              setGuesses(new Set)
-              setGameState(0)
-            }}>
-              Reset Puzzle
+          <div className="flex justify-center gap-2">
+            <Button variant="outline" size="icon" onClick={() => { ResetPuzzle() }}>
+              <RefreshCcw />
+            </Button>
+            <Button variant="outline" onClick={() => { console.log("gen new phrase") }}>
+              New Phrase
             </Button>
           </div>
           <div className="flex flex-row justify-center items-center gap-1 text-sm text-muted-foreground italic">
-            Hint: change the secret phrase in the
+            Hint: enter a custom secret phrase in the
             <Wrench size={16} />
             menu
           </div>
