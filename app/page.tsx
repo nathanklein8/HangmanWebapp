@@ -134,21 +134,21 @@ export default function Home() {
         <Input
           value={guess ? guess : ''}
           maxLength={1}
-          className="max-w-10 text-center border-neutral-500"
+          className="max-w-10 text-center dark:border-neutral-500"
           disabled={isVictory || numIncorrect == failState}
           onChange={(event) => {
             const g = event.target.value.toUpperCase()
             !guesses.has(g) && /^[A-Z]$/.test(g) ? setGuess(g) : setGuess(null)
           }}
           onKeyDown={(event) => {
-            if (event.key == 'Enter' && guess) {
+            if (event.key.toUpperCase() == 'ENTER' && guess) {
               submitGuess()
             }
           }}
         />
         <Confetti active={confettiTrigger} />
         <Button
-          className="border-neutral-500"
+          className="dark:border-neutral-500"
           size="icon"
           variant={!guess ? "outline" : "default"}
           disabled={!guess}
@@ -158,11 +158,11 @@ export default function Home() {
       </div>
 
       <div className="flex justify-center">
-        <div className="grid grid-cols-6 min-w-40 justify-center gap-2">
+        <div className="grid grid-cols-6 justify-center gap-2 min-w-40">
           {Array.from(guesses).map((guess) => {
             if (!secretPhrase.toUpperCase().includes(guess)) {
               return (
-                <div key={guess} className="flex justify-center">
+                <div key={guess} className="flex justify-center text-xl">
                   {guess}
                 </div>
               )
@@ -174,10 +174,10 @@ export default function Home() {
       {isVictory || numIncorrect == failState ?
         <>
           <div className="flex justify-center gap-2">
-            <Button className="border-neutral-500" variant="outline" onClick={() => { ResetPuzzle() }}>
+            <Button className="dark:border-neutral-500" variant="outline" onClick={() => { ResetPuzzle() }}>
               Retry
             </Button>
-            <Button className="border-neutral-500" variant="outline" onClick={() => { NewWord() }}>
+            <Button className="dark:border-neutral-500" variant="outline" onClick={() => { NewWord() }}>
               New Game
             </Button>
           </div>
