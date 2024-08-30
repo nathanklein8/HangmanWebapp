@@ -5,21 +5,26 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { ArrowUp, LucideGithub, LucideLinkedin, MessageCircleQuestion, RefreshCcw, Wrench } from "lucide-react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Confetti from "react-dom-confetti"
-import { cn } from "@/lib/utils"
 import ModeToggle from "@/components/mode-toggle"
 import { failState } from "@/lib/utils"
 import { RenderPhrase } from "@/components/render"
+import RandomWord from "@/data/data"
 
 export default function Home() {
 
   const [guesses, setGuesses] = useState<Set<string>>(new Set)
   const [guess, setGuess] = useState<string | null>(null)
-  const [secretPhrase, setSecretPhrase] = useState<string>("I love Applesauce!")
+  const [secretPhrase, setSecretPhrase] = useState<string>("")
+  const [customPhrase, setCustomPhrase] = useState<string>("")
   const [confettiTrigger, setConfettiTrigger] = useState<boolean>(false)
   const [numIncorrect, setNumIncorrect] = useState<number>(0)
   const [isVictory, setIsVictory] = useState<boolean>(false)
+
+  useEffect(() => {
+    NewWord()
+  }, [])
 
   const launchConfetti = () => {
     setConfettiTrigger(true)
@@ -39,6 +44,13 @@ export default function Home() {
     setGuesses(new Set)
     setNumIncorrect(0)
     setIsVictory(false)
+  }
+
+  async function NewWord() {
+    ResetPuzzle()
+    setSecretPhrase("") // reset to show loading text
+    const word = await RandomWord() // returns as singleton list
+    setSecretPhrase(word[0])
   }
 
   const submitGuess = () => {
@@ -97,9 +109,17 @@ export default function Home() {
                 <Input
                   placeholder="Enter Secret Phrase..."
                   onChange={(event) => {
-                    setSecretPhrase(event.target.value)
+                    setCustomPhrase(event.target.value)
+                  }}
+                  onKeyDown={(event) => {
+                    if (event.key.toUpperCase() == "ENTER") {
+                      setSecretPhrase(customPhrase)
+                    }
                   }}
                 />
+                <Button size="icon" onClick={() => { if (customPhrase != "") { setSecretPhrase(customPhrase) } }}>
+                  <ArrowUp />
+                </Button>
               </div>
             </PopoverContent>
           </Popover>
@@ -115,7 +135,7 @@ export default function Home() {
           value={guess ? guess : ''}
           maxLength={1}
           className="max-w-10 text-center"
-          disabled={isVictory  || numIncorrect == failState}
+          disabled={isVictory || numIncorrect == failState}
           onChange={(event) => {
             const g = event.target.value.toUpperCase()
             !guesses.has(g) && /^[A-Z]$/.test(g) ? setGuess(g) : setGuess(null)
@@ -155,12 +175,12 @@ export default function Home() {
             <Button variant="outline" size="icon" onClick={() => { ResetPuzzle() }}>
               <RefreshCcw />
             </Button>
-            <Button variant="outline" onClick={() => { console.log("gen new phrase") }}>
+            <Button variant="outline" onClick={() => { NewWord() }}>
               New Phrase
             </Button>
           </div>
           <div className="flex flex-row justify-center items-center gap-1 text-sm text-muted-foreground italic">
-            Hint: enter a custom secret phrase in the
+            Hint: enter a custom secret word/phrase in the
             <Wrench size={16} />
             menu
           </div>
