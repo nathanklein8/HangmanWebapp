@@ -9,7 +9,7 @@ import { useEffect, useState } from "react"
 import Confetti from "react-dom-confetti"
 import ModeToggle from "@/components/mode-toggle"
 import { failState } from "@/lib/utils"
-import { RenderPhrase } from "@/components/render"
+import { RenderPhrase } from "@/components/render-phrase"
 import RandomWord from "@/data/data"
 
 export default function Home() {
@@ -134,7 +134,7 @@ export default function Home() {
         <Input
           value={guess ? guess : ''}
           maxLength={1}
-          className="max-w-10 text-center"
+          className="max-w-10 text-center border-neutral-500"
           disabled={isVictory || numIncorrect == failState}
           onChange={(event) => {
             const g = event.target.value.toUpperCase()
@@ -148,10 +148,12 @@ export default function Home() {
         />
         <Confetti active={confettiTrigger} />
         <Button
-          size="icon" variant={!guess ? "secondary" : "default"}
+          className="border-neutral-500"
+          size="icon"
+          variant={!guess ? "outline" : "default"}
           disabled={!guess}
           onClick={submitGuess}>
-          {guess ? <ArrowUp /> : <MessageCircleQuestion />}
+          <MessageCircleQuestion />
         </Button>
       </div>
 
@@ -172,11 +174,11 @@ export default function Home() {
       {isVictory || numIncorrect == failState ?
         <>
           <div className="flex justify-center gap-2">
-            <Button variant="outline" size="icon" onClick={() => { ResetPuzzle() }}>
-              <RefreshCcw />
+            <Button className="border-neutral-500" variant="outline" onClick={() => { ResetPuzzle() }}>
+              Retry
             </Button>
-            <Button variant="outline" onClick={() => { NewWord() }}>
-              New Phrase
+            <Button className="border-neutral-500" variant="outline" onClick={() => { NewWord() }}>
+              New Game
             </Button>
           </div>
           <div className="flex flex-row justify-center items-center gap-1 text-sm text-muted-foreground italic">

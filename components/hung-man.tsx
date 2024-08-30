@@ -15,7 +15,8 @@ const HungMan = (props: {
   })
 
   const { resolvedTheme } = useTheme()
-  const color = mounted && resolvedTheme === "dark" ? "#D6D6D6" : "#404040"
+  
+  const color = mounted ? ( resolvedTheme === "dark" ? "#EFEFEF" : "#101010" ) : "#828282"
 
   const head = <circle cx={18} cy={9} r={4} key={0} className="animated-path animate-draw-line-fast" transform="rotate(-90, 18, 9)" />
   const torso = <path d="M18 13V24" key={1} className="animated-path animate-draw-line" />
