@@ -5,10 +5,9 @@ services:
     restart: unless-stopped
     ports:
       - 3000:3000
-        
-networks:
-  medianet:
-    external: true
-  default:
-    external: true
-    name: medianet
+  api:
+    container_name: api
+    image: random-word-api
+    restart: unless-stopped
+    ports:
+      - 3001:8080

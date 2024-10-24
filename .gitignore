@@ -15,6 +15,9 @@
 
 # production
 /build
+/word-api/bin
+/word-api/published
+/word-api/obj
 
 # misc
 .DS_Store
