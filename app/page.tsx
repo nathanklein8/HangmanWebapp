@@ -50,7 +50,7 @@ export default function Home() {
     ResetPuzzle()
     setSecretPhrase("") // reset to show loading text
     const word = await RandomWord() // returns as singleton list
-    setSecretPhrase(word[0])
+    setSecretPhrase(word)
   }
 
   const submitGuess = () => {
@@ -126,7 +126,7 @@ export default function Home() {
         </div>
       </div>
 
-      <HungMan size={128} numIncorrect={numIncorrect} />
+      <HungMan size={135} numIncorrect={numIncorrect} />
 
       <RenderPhrase phrase={secretPhrase} guesses={guesses} isVictory={isVictory} state={numIncorrect} />
 
@@ -173,10 +173,7 @@ export default function Home() {
 
       {isVictory || numIncorrect == failState ?
         <>
-          <div className="flex justify-center gap-2">
-            <Button className="dark:border-neutral-500" variant="outline" onClick={() => { ResetPuzzle() }}>
-              Retry
-            </Button>
+          <div className="flex justify-center gap-2 my-0">
             <Button className="dark:border-neutral-500" variant="outline" onClick={() => { NewWord() }}>
               New Game
             </Button>
