@@ -1,17 +1,28 @@
 # Hangman WebApp
 
-<a href="https://app.nklein.xyz/" target="_blank">Live Deployment</a>
+<a href="https://app.nklein.xyz/">Live Deployment</a>
 
 Next JS React App created using shadcn/ui components
 
 ## Docker Deployment
 
-Deploy a production build of the app using the included Docker Compose file.
+### Run Script <br>
+run `start.sh` shell script. Requires docker compose.
 
-- `docker build -t hangman-app .` <br>
-*Docker compose file expexts the docker image name to be 'hangman-app'*
+**or**
 
-- `docker compose up -d` <br>
-*Starts and detatches the container*
+### Build and run manually:
 
-App now accessable at localhost:3000
+1. Build Application image: <br>
+  `docker build -t hangman-app .`
+
+2. Build word API image: <br>
+  `cd word-api && docker build -t random-word-api .`
+
+3. Run containers: <br>
+  `docker run -d -p 3001:8080 --name random-word-api random-word-api` <br>
+  `docker run -d -p 3000:3000 --name hangman-app hangman-app` <br>
+
+## Usage
+
+http://localhost:3000
