@@ -1,7 +1,7 @@
 async function RandomWord(): Promise<string> {
 
     try {
-        const response = await fetch("http://localhost:3000/api/word");
+        const response = await fetch("https://app.nklein.xyz/api/word");
         if (response.ok) {
             const data = await response.json();
             return data.word;
