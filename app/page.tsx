@@ -49,7 +49,7 @@ export default function Home() {
   async function NewWord() {
     ResetPuzzle()
     setSecretPhrase("") // reset to show loading text
-    const word = await RandomWord() // returns as singleton list
+    const word = await RandomWord()
     setSecretPhrase(word)
   }
 

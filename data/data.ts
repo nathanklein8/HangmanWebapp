@@ -1,14 +1,18 @@
-async function RandomWord() {
+async function RandomWord(): Promise<string> {
+
     try {
-        const response = await fetch("http://localhost:5099/api/randomword");
-        if (!response.ok) {
+        const response = await fetch("http://localhost:3000/api/word");
+        if (response.ok) {
+            const data = await response.json();
+            return data.word;
+        }
+        else {
             throw new Error(`HTTP error! Status: ${response.status}`);
         }
-        const data = await response.text();
-        return data;
     } catch (error) {
         console.error('Error making API request:', error);
         throw error;
     }
+
 }
 export default RandomWord
