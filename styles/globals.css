@@ -85,6 +85,11 @@
     text-shadow: 0 0 12px #ffffff, 0 0 20px #ff6e6e, 0 0 42px #ff0000;
     animation: glow 2s linear;
   }
+  .fade-in {
+    animation: fadeInAnimation ease 2s;
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;
+  }
 }
 
 @keyframes glow-dark {
@@ -94,4 +99,8 @@
 @keyframes glow {
   from { text-shadow: none; }
   to { text-shadow: 0 0 12px #ffffff, 0 0 20px #ff6e6e, 0 0 42px #ff0000; }
+}
+@keyframes fadeInAnimation {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }

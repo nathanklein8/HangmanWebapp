@@ -8,19 +8,20 @@ import { ArrowUp, LucideGithub, LucideLinkedin, MessageCircleQuestion, RefreshCc
 import { useEffect, useState } from "react"
 import Confetti from "react-dom-confetti"
 import ModeToggle from "@/components/mode-toggle"
-import { failState } from "@/lib/utils"
+import { cn, failState } from "@/lib/utils"
 import { RenderPhrase } from "@/components/render-phrase"
 import RandomWord from "@/data/data"
 
 export default function Home() {
 
-  const [guesses, setGuesses] = useState<Set<string>>(new Set)
+  const [guesses, setGuesses] = useState<Array<string>>([])
   const [guess, setGuess] = useState<string | null>(null)
   const [secretPhrase, setSecretPhrase] = useState<string>("")
   const [customPhrase, setCustomPhrase] = useState<string>("")
   const [confettiTrigger, setConfettiTrigger] = useState<boolean>(false)
   const [numIncorrect, setNumIncorrect] = useState<number>(0)
   const [isVictory, setIsVictory] = useState<boolean>(false)
+  const [hintAvailable, setHintAvailable] = useState<boolean>(true)
 
   useEffect(() => {
     NewWord()
@@ -31,44 +32,46 @@ export default function Home() {
     setTimeout(() => setConfettiTrigger(false), 1000)
   }
 
-  const isGameWon = () => {
-    const phrase = secretPhrase.toUpperCase().replace(/[^a-zA-Z]/g, '');
-    for (let char of phrase) {
-      if (!guesses.has(char)) { return false }
-    }
-    return true
-  }
-
   const ResetPuzzle = () => {
     setGuess(null)
-    setGuesses(new Set)
+    setGuesses([])
     setNumIncorrect(0)
     setIsVictory(false)
   }
 
   async function NewWord() {
-    ResetPuzzle()
-    setSecretPhrase("") // reset to show loading text
     const word = await RandomWord()
-    setSecretPhrase(word)
+    ResetPuzzle()
+    setSecretPhrase(word.toUpperCase())
   }
 
-  const submitGuess = () => {
+  const submitGuess = (letter: string) => {
     // add guess to set
-    setGuesses(guesses.add(guess!))
+    const newGuesses = guesses.concat([letter])
+    setGuesses(prevGuesses => newGuesses)
     // increment game state if guess was wrong
-    if (!secretPhrase.toUpperCase().includes(guess!)) {
-      const newNum = numIncorrect + 1
-      setNumIncorrect(newNum)
+    if (!secretPhrase.toUpperCase().includes(letter)) {
+      setNumIncorrect(numIncorrect => numIncorrect + 1)
     } else {
-      // check if the game was won
-      if (isGameWon()) {
+      // check for victory
+      if (new Set(secretPhrase).isSubsetOf(new Set(newGuesses))) {
         launchConfetti()
         setIsVictory(true)
       }
     }
     // reset guess back to empty
     setGuess(null)
+  }
+
+  const revealHint = () => {
+    const possibleLetters = Array.from(new Set(secretPhrase).difference(new Set(guesses)))
+    const index = Math.floor(Math.random() * possibleLetters.length);
+    const chosen = possibleLetters[index]
+    submitGuess(chosen)
+    setHintAvailable(false)
+    setTimeout(() => {
+      setHintAvailable(true)
+    }, 10000)
   }
 
   return (
@@ -113,14 +116,17 @@ export default function Home() {
                   }}
                   onKeyDown={(event) => {
                     if (event.key.toUpperCase() == "ENTER") {
-                      setSecretPhrase(customPhrase)
+                      ResetPuzzle();
+                      setSecretPhrase(customPhrase.toUpperCase());
                     }
                   }}
                 />
-                <Button size="icon" onClick={() => { if (customPhrase != "") {
-                  setSecretPhrase(customPhrase);
-                  ResetPuzzle();
-                } }}>
+                <Button size="icon" onClick={() => {
+                  if (customPhrase != "") {
+                    ResetPuzzle();
+                    setSecretPhrase(customPhrase.toUpperCase());
+                  }
+                }}>
                   <ArrowUp />
                 </Button>
               </div>
@@ -133,40 +139,59 @@ export default function Home() {
 
       <RenderPhrase phrase={secretPhrase} guesses={guesses} isVictory={isVictory} state={numIncorrect} />
 
-      <div className="flex items-center justify-center gap-1">
-        <Input
-          value={guess ? guess : ''}
-          maxLength={1}
-          className="max-w-10 text-center dark:border-neutral-500"
-          disabled={isVictory || numIncorrect == failState}
-          onChange={(event) => {
-            const g = event.target.value.toUpperCase()
-            !guesses.has(g) && /^[A-Z]$/.test(g) ? setGuess(g) : setGuess(null)
-          }}
-          onKeyDown={(event) => {
-            if (event.key.toUpperCase() == 'ENTER' && guess) {
-              submitGuess()
-            }
-          }}
-        />
-        <Confetti active={confettiTrigger} />
-        <Button
-          className="dark:border-neutral-500"
-          size="icon"
-          variant={!guess ? "outline" : "default"}
-          disabled={!guess}
-          onClick={submitGuess}>
-          <MessageCircleQuestion />
-        </Button>
+      <div className="flex items-center justify-center">
+        {isVictory || numIncorrect < 4 || !hintAvailable || numIncorrect == failState
+          ? <></>
+          : <div className="flex grow max-w-20"></div>}
+        <div className="flex justify-content-center gap-1">
+          <Input
+            value={guess ? guess : ''}
+            maxLength={1}
+            className="max-w-10 text-center dark:border-neutral-500"
+            disabled={isVictory || numIncorrect == failState}
+            onChange={(event) => {
+              const g = event.target.value.toUpperCase()
+              guesses.indexOf(g) == -1 && /^[A-Z]$/.test(g) ? setGuess(g) : setGuess(null)
+            }}
+            onKeyDown={(event) => {
+              if (event.key.toUpperCase() == 'ENTER' && guess) {
+                submitGuess(guess)
+              }
+            }}
+          />
+          <Confetti active={confettiTrigger} />
+          <Button
+            className="dark:border-neutral-500"
+            size="icon"
+            variant={!guess ? "outline" : "default"}
+            disabled={!guess}
+            onClick={() => {
+              if (guess) {
+                submitGuess(guess)
+              }
+            }}>
+            <MessageCircleQuestion />
+          </Button>
+        </div>
+        {isVictory || numIncorrect < 4 || !hintAvailable || numIncorrect == failState
+          ? <></>
+          : <div className="flex grow max-w-20">
+            <Button
+              className="mx-3 fade-in"
+              variant="default"
+              onClick={revealHint}>
+              Hint
+            </Button>
+          </div>}
       </div>
 
       <div className="flex justify-center">
         <div className="grid grid-cols-6 justify-center gap-2 min-w-40">
-          {Array.from(guesses).map((guess) => {
-            if (!secretPhrase.toUpperCase().includes(guess)) {
+          {Array.from(guesses).map((letter) => {
+            if (!secretPhrase.toUpperCase().includes(letter)) {
               return (
-                <div key={guess} className="flex justify-center text-xl">
-                  {guess}
+                <div key={letter} className="flex justify-center text-xl">
+                  {letter}
                 </div>
               )
             }

@@ -79,7 +79,7 @@ const config = {
         drawLine: {
           from: { strokeDashoffset: "25" },
           to: { strokeDashoffset: "0" }
-        },
+        }
       },
       animation: {
         "draw-line": "drawLine 1.5s linear",
