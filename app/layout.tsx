@@ -5,6 +5,7 @@ import "../styles/globals.css";
 import { cn } from "@/lib/utils"
 import { cookies } from "next/headers";
 import { ThemeProvider } from "@/components/theme-provider";
+import { useState } from "react";
 
 const fontSans = localFont({
   src: "../styles/fonts/inter.woff2",
@@ -15,15 +16,21 @@ export const metadata: Metadata = {
   title: "Hangman"
 };
 
-const cookieStore = await cookies()
-const themeCookie = cookieStore.get("theme");
-const theme = themeCookie ? themeCookie.value : "dark";
+const [theme, setTheme] = useState<string>("dark")
+
+async function getTheme() {
+  const cookieStore = await cookies()
+  const themeCookie = cookieStore.get('theme')
+  const theme = themeCookie ? themeCookie.value : "dark";
+  setTheme(theme)
+}
 
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  getTheme();
   return (
     <html lang="en" className={theme} style={{ colorScheme: theme }}>
       <body className={cn("min-h-screen bg-background font-sans antialiased", fontSans.variable)}>
