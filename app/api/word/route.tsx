@@ -1,12 +1,6 @@
-import type { NextApiRequest, NextApiResponse } from 'next'
-
 import fs from 'fs';
 import path from 'path';
-
-type ResponseData = {
-    word?: string,
-    error?: string
-}
+import { NextResponse } from 'next/server';
 
 const filePath = path.join(process.cwd(), 'data', 'filtered_words.txt');
 const fileContent = fs.readFileSync(filePath, 'utf-8');
@@ -17,10 +11,6 @@ function getRandomWord() {
     return wordList[index]
 }
 
-export default function handler(
-    req: NextApiRequest,
-    res: NextApiResponse<ResponseData>
-) {
-    const index = 
-    res.status(200).json({ word: getRandomWord() });
+export async function GET(req: Request) {
+    return NextResponse.json({ word: getRandomWord() })
 }

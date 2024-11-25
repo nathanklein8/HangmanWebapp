@@ -15,19 +15,15 @@ export const metadata: Metadata = {
   title: "Hangman"
 };
 
-function getTheme() {
-  const cookieStore = cookies();
-  const themeCookie = cookieStore.get("theme");
-  const theme = themeCookie ? themeCookie.value : "dark";
-  return theme;
-}
+const cookieStore = await cookies()
+const themeCookie = cookieStore.get("theme");
+const theme = themeCookie ? themeCookie.value : "dark";
 
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const theme = getTheme() as string;
   return (
     <html lang="en" className={theme} style={{ colorScheme: theme }}>
       <body className={cn("min-h-screen bg-background font-sans antialiased", fontSans.variable)}>

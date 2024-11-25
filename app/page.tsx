@@ -117,7 +117,10 @@ export default function Home() {
                     }
                   }}
                 />
-                <Button size="icon" onClick={() => { if (customPhrase != "") { setSecretPhrase(customPhrase) } }}>
+                <Button size="icon" onClick={() => { if (customPhrase != "") {
+                  setSecretPhrase(customPhrase);
+                  ResetPuzzle();
+                } }}>
                   <ArrowUp />
                 </Button>
               </div>
