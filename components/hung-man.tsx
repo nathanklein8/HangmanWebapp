@@ -57,11 +57,6 @@ const HungMan = (props: {
 
   return (
     <div className="flex flex-row justify-center">
-      {/* <div className="flex grow max-w-24 justify-end">
-        {props.numIncorrect == failState ?
-          <p className="font-extrabold my-10 text-glow dark:text-glow-dark text-center text-3xl text-red-600 dark:text-red-500">Game</p> : <></>
-        }
-      </div> */}
       <svg
         width={props.size}
         height={props.size}
@@ -80,11 +75,6 @@ const HungMan = (props: {
           }
         })}
       </svg>
-      {/* <div className="flex grow max-w-24 justify-start">
-        {props.numIncorrect == failState ?
-          <p className="font-extrabold text-glow dark:text-glow-dark my-10 text-center text-3xl text-red-600 dark:text-red-500">Over</p> : <></>
-        }
-      </div> */}
     </div>
   )
 
