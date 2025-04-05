@@ -10,6 +10,7 @@ import { cn, failState } from "@/lib/utils"
 import { RenderPhrase } from "@/components/render-phrase"
 import RandomWord from "@/data/data"
 import Keyboard from "@/components/keyboard"
+import { isMobile } from 'react-device-detect';
 
 export default function Home() {
 
@@ -72,7 +73,6 @@ export default function Home() {
     }, 10000)
   }
 
-
   return (
     <div className="flex flex-col space-y-2">
       <div className="flex justify-between p-2 gap-4">
@@ -125,9 +125,11 @@ export default function Home() {
             variant="outline"
             onClick={() => { NewWord() }}
           >New Game</Button>
-          <p
-            className="text-sm text-muted-foreground italic"
-          >(Spacebar)</p>
+          {!isMobile
+            ? <p className="text-sm text-muted-foreground italic">
+              (Spacebar)
+            </p>
+            : <></>}
         </div>
         : <></>}
 
