@@ -11,6 +11,7 @@ import { RenderPhrase } from "@/components/render-phrase"
 import RandomWord from "@/data/data"
 import Keyboard from "@/components/keyboard"
 import { isMobile } from 'react-device-detect';
+import LoadingSpinner from "@/components/loading-spinner"
 
 export default function Home() {
 
@@ -23,8 +24,11 @@ export default function Home() {
   const [hintLetters, setHintLetters] = useState<Set<string>>(new Set())
   const [correctLetters, setCorrectLetters] = useState<Set<string>>(new Set())
 
+  const [mounted, setMounted] = useState<boolean>(false)
+
   useEffect(() => {
     NewWord()
+    setTimeout(() => setMounted(true), 250)
   }, [])
 
   const launchConfetti = () => {
@@ -71,6 +75,12 @@ export default function Home() {
     setTimeout(() => {
       setHintAvailable(true)
     }, 10000)
+  }
+
+  if (!mounted) {
+    return (
+      <LoadingSpinner/>
+    )
   }
 
   return (
