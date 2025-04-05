@@ -15,25 +15,53 @@ const HungMan = (props: {
   })
 
   const { resolvedTheme } = useTheme()
-  
-  const color = mounted ? ( resolvedTheme === "dark" ? "#EFEFEF" : "#101010" ) : "#828282"
 
-  const head = <circle cx={18} cy={9} r={4} key={0} className="animated-path animate-draw-line-fast" transform="rotate(-90, 18, 9)" />
-  const torso = <path d="M18 13V24" key={1} className="animated-path animate-draw-line" />
-  const leftArm = <path d="M18 15L14 20" key={2} className="animated-path animate-draw-line" />
-  const rightArm = <path d="M18 15L22 20" key={3} className="animated-path animate-draw-line" />
-  const leftLeg = <path d="M18 23V23.5279C18 23.8384 17.9277 24.1446 17.7889 24.4223L15 30" key={4} className="animated-path animate-draw-line" />
-  const rightLeg = <path d="M18 24L21 30" key={5} className="animated-path animate-draw-line" />
+  // const color = mounted ? ( resolvedTheme === "dark" ? "#EFEFEF" : "#101010" ) : "#828282"
+
+  const color = mounted ? (
+    (resolvedTheme === "dark"
+      ? "#EFEFEF" :
+      "#101010")
+  ) : "#828282"
+
+  const bodyColor = mounted ? (
+    props.numIncorrect == failState
+      ? "#d42a2a"
+      : (resolvedTheme === "dark"
+        ? "#EFEFEF" :
+        "#101010")
+  ) : "#828282"
+
+  const head = <circle
+    cx={18} cy={9} r={4} key={0}
+    className="animated-path animate-draw-line-fast"
+    transform="rotate(-90, 18, 9)"
+    stroke={bodyColor} />
+  const torso = <path d="M18 13V24" key={1}
+    className="animated-path animate-draw-line"
+    stroke={bodyColor} />
+  const leftArm = <path d="M18 15L14 20" key={2}
+    className="animated-path animate-draw-line"
+    stroke={bodyColor} />
+  const rightArm = <path d="M18 15L22 20" key={3}
+    className="animated-path animate-draw-line"
+    stroke={bodyColor} />
+  const leftLeg = <path d="M18 23V23.5279C18 23.8384 17.9277 24.1446 17.7889 24.4223L15 30" key={4}
+    className="animated-path animate-draw-line"
+    stroke={bodyColor} />
+  const rightLeg = <path d="M18 24L21 30" key={5}
+    className="animated-path animate-draw-line"
+    stroke={bodyColor} />
 
   const bodyParts = [head, torso, leftArm, rightArm, leftLeg, rightLeg]
 
   return (
     <div className="flex flex-row justify-center">
-      <div className="flex grow max-w-24 justify-end">
+      {/* <div className="flex grow max-w-24 justify-end">
         {props.numIncorrect == failState ?
           <p className="font-extrabold my-10 text-glow dark:text-glow-dark text-center text-3xl text-red-600 dark:text-red-500">Game</p> : <></>
         }
-      </div>
+      </div> */}
       <svg
         width={props.size}
         height={props.size}
@@ -52,11 +80,11 @@ const HungMan = (props: {
           }
         })}
       </svg>
-      <div className="flex grow max-w-24 justify-start">
+      {/* <div className="flex grow max-w-24 justify-start">
         {props.numIncorrect == failState ?
           <p className="font-extrabold text-glow dark:text-glow-dark my-10 text-center text-3xl text-red-600 dark:text-red-500">Over</p> : <></>
         }
-      </div>
+      </div> */}
     </div>
   )
 
