@@ -11,6 +11,7 @@ import ModeToggle from "@/components/mode-toggle"
 import { cn, failState } from "@/lib/utils"
 import { RenderPhrase } from "@/components/render-phrase"
 import RandomWord from "@/data/data"
+import Keyboard from "@/components/keyboard"
 
 export default function Home() {
 
@@ -22,6 +23,8 @@ export default function Home() {
   const [numIncorrect, setNumIncorrect] = useState<number>(0)
   const [isVictory, setIsVictory] = useState<boolean>(false)
   const [hintAvailable, setHintAvailable] = useState<boolean>(true)
+  const [hintLetters, setHintLetters] = useState<Set<string>>(new Set())
+  const [correctLetters, setCorrectLetters] = useState<Set<string>>(new Set())
 
   useEffect(() => {
     NewWord()
@@ -37,6 +40,8 @@ export default function Home() {
     setGuesses([])
     setNumIncorrect(0)
     setIsVictory(false)
+    setHintLetters(new Set())
+    setCorrectLetters(new Set())
   }
 
   async function NewWord() {
@@ -45,7 +50,7 @@ export default function Home() {
     setSecretPhrase(word.toUpperCase())
   }
 
-  const submitGuess = (letter: string) => {
+  const submitGuess = (letter: string, hint=false) => {
     // add guess to set
     const newGuesses = guesses.concat([letter])
     setGuesses(prevGuesses => newGuesses)
@@ -54,6 +59,10 @@ export default function Home() {
       setNumIncorrect(numIncorrect => numIncorrect + 1)
     } else {
       // check for victory
+      setCorrectLetters(prev => new Set([...prev, letter]))
+      if (hint) {
+        setHintLetters(prev => new Set([...prev, letter]))
+      }
       if (new Set(secretPhrase).isSubsetOf(new Set(newGuesses))) {
         launchConfetti()
         setIsVictory(true)
@@ -67,12 +76,13 @@ export default function Home() {
     const possibleLetters = Array.from(new Set(secretPhrase).difference(new Set(guesses)))
     const index = Math.floor(Math.random() * possibleLetters.length);
     const chosen = possibleLetters[index]
-    submitGuess(chosen)
+    submitGuess(chosen, true)
     setHintAvailable(false)
     setTimeout(() => {
       setHintAvailable(true)
     }, 10000)
   }
+
 
   return (
     <div className="flex flex-col space-y-2">
@@ -139,7 +149,30 @@ export default function Home() {
 
       <RenderPhrase phrase={secretPhrase} guesses={guesses} isVictory={isVictory} state={numIncorrect} />
 
-      <div className="flex items-center justify-center">
+      <Keyboard
+        onKeyClick={submitGuess}
+        onHintClick={revealHint}
+        guesses={new Set(guesses)}
+        correctLetters={correctLetters}
+        hintLetters={hintLetters}
+        hideHint={isVictory || numIncorrect < 4 || !hintAvailable || numIncorrect == failState}
+      />
+      <div className="flex justify-center">
+        <Confetti active={confettiTrigger}/>
+      </div>
+
+      {/* {isVictory || numIncorrect < 4 || !hintAvailable || numIncorrect == failState
+          ? <></>
+          : <div className="flex grow max-w-20">
+            <Button
+              className="mx-3 fade-in"
+              variant="default"
+              onClick={revealHint}>
+              Hint
+            </Button>
+          </div>} */}
+
+      {/* <div className="flex items-center justify-center">
         {isVictory || numIncorrect < 4 || !hintAvailable || numIncorrect == failState
           ? <></>
           : <div className="flex grow max-w-20"></div>}
@@ -197,7 +230,7 @@ export default function Home() {
             }
           })}
         </div>
-      </div>
+      </div> */}
 
       {isVictory || numIncorrect == failState ?
         <>
