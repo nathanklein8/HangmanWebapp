@@ -97,23 +97,26 @@ export default function Home() {
 
       <RenderPhrase phrase={secretPhrase} guesses={guesses} isVictory={isVictory} state={numIncorrect} />
 
-      <Keyboard
-        onKeyClick={(guess) => {
-          if (!isVictory && numIncorrect != failState) {
-            submitGuess(guess)
-          }
-        }}
-        onHintClick={revealHint}
-        onNewGameClick={() => {
-          if (isVictory || numIncorrect == failState) {
-            NewWord()
-          }
-        }}
-        guesses={new Set(guesses)}
-        correctLetters={correctLetters}
-        hintLetters={hintLetters}
-        hideHint={isVictory || numIncorrect < 4 || !hintAvailable || numIncorrect == failState}
-      />
+      <div className={isMobile ? "absolute inset-x-0 bottom-0" : ""}>
+        <Keyboard
+          onKeyClick={(guess) => {
+            if (!isVictory && numIncorrect != failState) {
+              submitGuess(guess)
+            }
+          }}
+          onHintClick={revealHint}
+          onNewGameClick={() => {
+            if (isVictory || numIncorrect == failState) {
+              NewWord()
+            }
+          }}
+          guesses={new Set(guesses)}
+          correctLetters={correctLetters}
+          hintLetters={hintLetters}
+          hideHint={isVictory || numIncorrect < 4 || !hintAvailable || numIncorrect == failState}
+        />
+      </div>
+
       <div className="flex justify-center">
         <Confetti active={confettiTrigger} />
       </div>

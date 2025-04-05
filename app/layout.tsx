@@ -25,7 +25,7 @@ export default async function RootLayout({
   const theme = themeCookie ? themeCookie.value : "dark";
   return (
     <html lang="en" className={theme} style={{ colorScheme: theme }}>
-      <body className={cn("min-h-screen bg-background font-sans antialiased", fontSans.variable)}>
+      <body className={cn("max-h-screen bg-background font-sans antialiased", fontSans.variable)}>
         <ThemeProvider attribute="class" storageKey="theme" defaultTheme="dark" enableSystem>
           {children}
         </ThemeProvider>
