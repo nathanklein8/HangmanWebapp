@@ -107,7 +107,7 @@ export default function Home() {
 
       <RenderPhrase phrase={secretPhrase} guesses={guesses} isVictory={isVictory} state={numIncorrect} />
 
-      <div className={isMobile ? "absolute inset-x-0 bottom-0" : ""}>
+      <div className={isMobile ? "absolute inset-x-0 bottom-[5%]" : ""}>
         <Keyboard
           onKeyClick={(guess) => {
             if (!isVictory && numIncorrect != failState) {
@@ -124,6 +124,7 @@ export default function Home() {
           correctLetters={correctLetters}
           hintLetters={hintLetters}
           hideHint={isVictory || numIncorrect < 4 || !hintAvailable || numIncorrect == failState}
+          renderMobile={isMobile}
         />
       </div>
 
