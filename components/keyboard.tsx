@@ -1,8 +1,6 @@
 import React, { useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { mobileModel } from 'react-device-detect';
-
 
 type KeyboardProps = {
   onKeyClick: (key: string) => void;
@@ -78,6 +76,7 @@ const Keyboard: React.FC<KeyboardProps> = ({
                 variant={'keyboardGhost'}
                 size={'keyboard'}
                 className={cn(
+                  renderMobile ? 'h-12' : '',
                   'fade-in dark:bg-blue-600 bg-blue-500',
                 )}
               >?</Button>
