@@ -119,7 +119,7 @@ export default function Home() {
           <p>{getDefinitionPhrase()}</p>
           <a href={"https://en.wiktionary.org/wiki/" + secretPhrase.toLowerCase()} target="_blank" rel="noopener noreferrer">
             <div className="text-blue-500 underline-offset-4 hover:underline flex items-center gap-2 font-medium text-[16px]">
-              <p>Wikitionary Definition</p> <div className="flex gap-0.5">
+              <p>Wiktionary Definition</p> <div className="flex gap-0.5">
                 <BookOpen size={24} strokeWidth={1.5} /><Search size={24} strokeWidth={1.5} />
               </div>
             </div>
