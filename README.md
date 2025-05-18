@@ -1,11 +1,22 @@
 # Hangman WebApp
 
-<a href="https://app.nklein.xyz/">Live Deployment</a>
+Deployed live <a href="https://app.nklein.xyz/">here</a>
 
-Next JS React App created using shadcn/ui components
+Next JS React App
 
-## Docker container
+Uses some shadcn/ui components
 
-1. `git clone https://github.com/nathanklein8/HangmanWebapp.git`
-2. `docker build -t hangman-app HangmanWebapp/`
-3. `docker run -d -p "3000:3000" --name=hangman hangman-app`
+## To run in a Docker container
+
+1. Clone repo
+```shell
+git clone https://github.com/nathanklein8/HangmanWebapp.git
+```
+2. Build docker image
+```shell
+docker build -t hangman-app HangmanWebapp/
+```
+3. Start an interative temporary container
+```shell
+docker run --rm -it -p "3000:3000" --name=hangman hangman-app
+```
