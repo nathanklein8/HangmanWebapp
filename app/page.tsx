@@ -3,7 +3,7 @@
 import HungMan from "@/components/hung-man"
 import { Button } from "@/components/ui/button"
 import { LucideGithub, LucideLinkedin, Search, SearchCheck, BookA, BookOpenCheck, BookOpen } from "lucide-react"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useMemo } from "react"
 import Confetti from "react-dom-confetti"
 import ModeToggle from "@/components/mode-toggle"
 import { cn, failState } from "@/lib/utils"
@@ -84,6 +84,13 @@ export default function Home() {
     }
   }
 
+  const definitionPhrase = useMemo(() => {
+    if (isVictory || numIncorrect === failState) {
+      return getDefinitionPhrase();
+    }
+    return "";
+  }, [isVictory, numIncorrect]);
+
   if (secretPhrase == "") {
     return (
       <LoadingSpinner />
@@ -112,11 +119,17 @@ export default function Home() {
 
       <HungMan size={196} numIncorrect={numIncorrect} />
 
-      <RenderPhrase phrase={secretPhrase} guesses={guesses} isVictory={isVictory} state={numIncorrect} />
+      <RenderPhrase
+        phrase={secretPhrase}
+        guesses={guesses}
+        isVictory={isVictory}
+        state={numIncorrect}
+        hintLetters={hintLetters}
+      />
 
       {isVictory || numIncorrect == failState ? // word definition button
         <div className="flex flex-col items-center py-2 gap-1">
-          <p>{getDefinitionPhrase()}</p>
+          <p>{definitionPhrase}</p>
           <a href={"https://en.wiktionary.org/wiki/" + secretPhrase.toLowerCase()} target="_blank" rel="noopener noreferrer">
             <div className="text-blue-500 underline-offset-4 hover:underline flex items-center gap-2 font-medium text-[16px]">
               <p>Wiktionary Definition</p> <div className="flex gap-0.5">

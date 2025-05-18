@@ -74,7 +74,7 @@
     stroke-dasharray: 25;
   }
   .animated-div {
-    transition: all 2s, color 0.25s linear;
+    transition: all 1.5s, color 0.5s linear;
     transition-delay: 500
   }
   .text-glow-dark {
