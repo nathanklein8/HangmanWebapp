@@ -2,13 +2,13 @@
 
 import HungMan from "@/components/hung-man"
 import { Button } from "@/components/ui/button"
-import { LucideGithub, LucideLinkedin } from "lucide-react"
+import { LucideGithub, LucideLinkedin, Search, SearchCheck, BookA, BookOpenCheck, BookOpen } from "lucide-react"
 import { useEffect, useState } from "react"
 import Confetti from "react-dom-confetti"
 import ModeToggle from "@/components/mode-toggle"
 import { cn, failState } from "@/lib/utils"
 import { RenderPhrase } from "@/components/render-phrase"
-import RandomWord from "@/data/data"
+import { RandomWord, WinDefinitionPhrases, LoseDefinitionPhrases } from "@/data/data"
 import Keyboard from "@/components/keyboard"
 import { isMobile } from 'react-device-detect';
 import LoadingSpinner from "@/components/loading-spinner"
@@ -74,6 +74,16 @@ export default function Home() {
     }, 10000) // 10 second hint cooldown
   }
 
+  const getDefinitionPhrase = () => {
+    if (isVictory) {
+      const index = Math.floor(Math.random() * WinDefinitionPhrases.length);
+      return WinDefinitionPhrases[index]
+    } else {
+      const index = Math.floor(Math.random() * LoseDefinitionPhrases.length);
+      return LoseDefinitionPhrases[index]
+    }
+  }
+
   if (secretPhrase == "") {
     return (
       <LoadingSpinner />
@@ -104,6 +114,19 @@ export default function Home() {
 
       <RenderPhrase phrase={secretPhrase} guesses={guesses} isVictory={isVictory} state={numIncorrect} />
 
+      {isVictory || numIncorrect == failState ? // word definition button
+        <div className="flex flex-col items-center py-2 gap-1">
+          <p>{getDefinitionPhrase()}</p>
+          <a href={"https://en.wiktionary.org/wiki/" + secretPhrase.toLowerCase()} target="_blank" rel="noopener noreferrer">
+            <div className="text-blue-500 underline-offset-4 hover:underline flex items-center gap-2 font-medium text-[16px]">
+              <p>Wikitionary Definition</p> <div className="flex gap-0.5">
+                <BookOpen size={24} strokeWidth={1.5} /><Search size={24} strokeWidth={1.5} />
+              </div>
+            </div>
+          </a>
+        </div>
+        : <></>}
+
       <div className={cn(isMobile ? "absolute inset-x-0 bottom-[5%]" : "", "")}>
         <div className="relative">
           <Keyboard
@@ -129,7 +152,7 @@ export default function Home() {
           {isVictory || numIncorrect == failState ? // new game button, positioned in center, relative to parent div
             <Button
               className="max-w-fit max-h-fit p-4 z-10 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-lg"
-              variant="outline"
+              variant="destructive"
               onClick={() => { NewWord() }}
             >
               New Game

@@ -1,5 +1,4 @@
 import { failState, cn } from "@/lib/utils"
-import { Loader2 } from "lucide-react"
 
 export const RenderPhrase = (props: {
   phrase: string,
@@ -7,17 +6,11 @@ export const RenderPhrase = (props: {
   isVictory: boolean,
   guesses: Array<string>,
 }) => {
-  // this should never happen anymore, since this component is not rendered until we have a word
-  // if (props.phrase == "") {
-  //   return <div className="flex justify-center items-center gap-1.5 min-h-10 text-muted-foreground">
-  //     <Loader2 className="animate-spin" size={"20px"} /> <p>Generating Secret Word...</p>
-  //   </div>
-  // }
   const text = (props.state == failState)
     ? props.phrase.toUpperCase()
     : props.phrase.toUpperCase().replace(/[A-Z]/g, char => props.guesses.indexOf(char) != -1 ? char : '_')
   return (
-    <div className="flex flex-wrap justify-center min-h-10 text-2xl gap-4 py-4">
+    <div className="flex flex-wrap justify-center min-h-10 text-2xl gap-4 py-0">
       {text.split(' ').map((word, i) => {
         return <RenderWord key={i} word={word} state={props.state} isVictory={props.isVictory} guesses={props.guesses} />
       })}
