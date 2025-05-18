@@ -66,7 +66,7 @@ const Keyboard: React.FC<KeyboardProps> = ({
                 onClick={() => onKeyClick(key)}
                 variant={guesses.has(key) ? 'keyboardGhost' : 'keyboard'}
                 size={'keyboard'}
-                disabled={guesses.has(key)}
+                disabled={guesses.has(key) || blurred}
                 className={cn(
                   renderMobile ? 'h-12' : '',
                   correctLetters.has(key) ? (hintLetters.has(key) ? 'bg-blue-500' : 'bg-primary') : ''
