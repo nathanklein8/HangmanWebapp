@@ -1,4 +1,5 @@
-import { failState, cn } from "@/lib/utils"
+import { failState } from "@/data/data"
+import { cn } from "@/lib/utils"
 
 export const RenderPhrase = (props: {
   phrase: string,
@@ -11,7 +12,7 @@ export const RenderPhrase = (props: {
     ? props.phrase.toUpperCase()
     : props.phrase.toUpperCase().replace(/[A-Z]/g, char => props.guesses.indexOf(char) != -1 ? char : '_')
   return (
-    <div className="flex flex-wrap justify-center min-h-10 text-2xl gap-4 py-0">
+    <div className="flex flex-wrap justify-center text-2xl gap-4">
       {text.split(' ').map((word, i) => {
         return <RenderWord
           key={i}

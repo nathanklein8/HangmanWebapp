@@ -16,14 +16,14 @@ async function RandomWord(): Promise<string> {
 
 }
 
+const failState = 6
+
 const WinDefinitionPhrases = [
     "Big brain energy",
-    "You nailed it!",
+    "Nailed it!",
     "Word master, huh?",
-    "Flawless victory!",
-    "You speak fluent wizard",
-    "Smashed it!",
-    "You knew that?!",
+    "You speak fluent wizard ",
+    "Wow, big word guy over here?",
     "Flex those syllables",
     "Rolled a nat 20 on vocabulary",
     "You’re a certified wordsmith",
@@ -37,19 +37,19 @@ const WinDefinitionPhrases = [
     "Too smart for this game",
     "Who needs hints anyway?",
     "That word feared you",
+    "Yahtzee!"
 ];
 
 const LoseDefinitionPhrases = [
     "No way that's a word...",
-    "This feels illegal",
     "Words are hard",
     "I've got questions",
     "Is that really a word?!?",
     "Okay, now you’re just making stuff up",
     "My brain just blue-screened",
     "Sounds suspicious",
-    "That was English?",
-    "Summon the sages",
+    "I'm 87% sure that's fake",
+    "Somebody ask a librarian",
     "Check the scrolls",
     "Ancient runes detected",
     "I cast ‘Comprehend Language’",
@@ -58,11 +58,15 @@ const LoseDefinitionPhrases = [
     "A wild word appears!",
     "Word alchemy failed",
     "Echoes of forbidden grammar",
-    "Straight out of a wizard’s thesaurus",
+    "Straight out of a wizard’s thesaurus ",
     "Not even Google knows that one",
     "You fought the word and the word won",
     "Lost in the linguistic sauce",
     "Should’ve brought a thesaurus",
+    "Maybe it’s in Klingon",
+    "Definitely Scrabble bait",
+    "Who said it would be easy?",
+    "I lost a brain cell reading that",
 ];
 
-export { RandomWord, WinDefinitionPhrases, LoseDefinitionPhrases }
+export { RandomWord, WinDefinitionPhrases, LoseDefinitionPhrases, failState }

@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { isMobile } from 'react-device-detect';
 
 type KeyboardProps = {
   onKeyClick: (key: string) => void;
@@ -52,41 +53,55 @@ const Keyboard: React.FC<KeyboardProps> = ({
   }, [onKeyClick]);
 
   return (
-    <div className={cn(
-      'flex flex-col items-center', blurred ? 'blur-[2px]' : '' 
-    )}>
-      {keys.map((row, rowIndex) => (
-        <div key={rowIndex} className={cn(
-          'flex w-full gap-1 justify-center mb-1',
+    // pin keyboard to bottom of screen if on a mobile device
+    <div className={cn(isMobile ? "absolute inset-x-0 bottom-[5%]" : "", "py-2")}>
+      <div className="relative">
+        <div className={cn(
+          'flex flex-col items-center', blurred ? 'blur-[2px]' : ''
         )}>
-          {row.map((key, index) => (
-            <div key={index}>
-              {key != '?'
-              ? <Button
-                onClick={() => onKeyClick(key)}
-                variant={guesses.has(key) ? 'keyboardGhost' : 'keyboard'}
-                size={'keyboard'}
-                disabled={guesses.has(key) || blurred}
-                className={cn(
-                  renderMobile ? 'h-12' : '',
-                  correctLetters.has(key) ? (hintLetters.has(key) ? 'bg-blue-500' : 'bg-primary') : ''
-                )}
-              >{key}</Button>
-              : (!hideHint
-                ? <Button
-                onClick={onHintClick}
-                variant={'keyboardGhost'}
-                size={'keyboard'}
-                className={cn(
-                  renderMobile ? 'h-12' : '',
-                  'fade-in dark:bg-blue-600 bg-blue-500',
-                )}
-              >?</Button>
-              : <div className='w-8'></div>
-              )}</div>
+          {keys.map((row, rowIndex) => (
+            <div key={rowIndex} className={cn(
+              'flex w-full gap-1 justify-center mb-1',
+            )}>
+              {row.map((key, index) => (
+                <div key={index}>
+                  {key != '?'
+                    ? <Button
+                      onClick={() => onKeyClick(key)}
+                      variant={guesses.has(key) ? 'keyboardGhost' : 'keyboard'}
+                      size={'keyboard'}
+                      disabled={guesses.has(key) || blurred}
+                      className={cn(
+                        renderMobile ? 'h-12' : '',
+                        correctLetters.has(key) ? (hintLetters.has(key) ? 'bg-blue-500' : 'bg-primary') : ''
+                      )}
+                    >{key}</Button>
+                    : (!hideHint && !blurred
+                      ? <Button
+                        onClick={onHintClick}
+                        variant={'keyboardGhost'}
+                        size={'keyboard'}
+                        className={cn(
+                          renderMobile ? 'h-12' : '',
+                          'fade-in dark:bg-blue-600 bg-blue-500',
+                        )}
+                      >?</Button>
+                      : <div className='w-8'></div>
+                    )}</div>
+              ))}
+            </div>
           ))}
         </div>
-      ))}
+        {blurred ? // new game button, positioned in center, relative to parent div
+          <Button
+            className="max-w-fit max-h-fit p-4 z-10 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-lg"
+            variant="destructive"
+            onClick={onNewGameClick}
+          >
+            New Game
+          </Button>
+          : <></>}
+      </div>
     </div>
   );
 };

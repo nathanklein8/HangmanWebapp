@@ -1,12 +1,14 @@
 "use client"
 
+import { failState } from "@/data/data";
 import { useTheme } from "next-themes";
 import * as React from "react";
 import { useEffect, useState } from "react";
-import { failState } from "@/lib/utils";
 
 const HungMan = (props: {
-  size: number, numIncorrect: number
+  size: number,
+  numIncorrect: number,
+  strokeWidth: number
 }) => {
   const [mounted, setMounted] = useState<boolean>(false)
 
@@ -65,7 +67,7 @@ const HungMan = (props: {
         xmlns="http://www.w3.org/2000/svg"
         strokeLinecap="round"
         stroke={color}
-        strokeWidth={2}
+        strokeWidth={props.strokeWidth}
       >
         <path d="M2 34H5M8 34H5M34 34H31M28 34H31M31 34V4C31 2.89543 30.1046 2 29 2H7C5.89543 2 5 2.89543 5 4V34" />
         <path d="M18 3V4.8" />

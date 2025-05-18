@@ -1,22 +1,20 @@
 "use client"
 
 import HungMan from "@/components/hung-man"
-import { Button } from "@/components/ui/button"
-import { LucideGithub, LucideLinkedin, Search, SearchCheck, BookA, BookOpenCheck, BookOpen } from "lucide-react"
 import { useEffect, useState, useMemo } from "react"
 import Confetti from "react-dom-confetti"
-import ModeToggle from "@/components/mode-toggle"
-import { cn, failState } from "@/lib/utils"
 import { RenderPhrase } from "@/components/render-phrase"
-import { RandomWord, WinDefinitionPhrases, LoseDefinitionPhrases } from "@/data/data"
+import { RandomWord, WinDefinitionPhrases, LoseDefinitionPhrases, failState } from "@/data/data"
 import Keyboard from "@/components/keyboard"
 import { isMobile } from 'react-device-detect';
 import LoadingSpinner from "@/components/loading-spinner"
+import WordDefinition from "@/components/word-definition"
+import AppHeader from "@/components/app-header"
 
 export default function Home() {
 
   const [guesses, setGuesses] = useState<Array<string>>([])
-  const [secretPhrase, setSecretPhrase] = useState<string>("")
+  const [secretWord, setsecretWord] = useState<string>("")
   const [confettiTrigger, setConfettiTrigger] = useState<boolean>(false)
   const [numIncorrect, setNumIncorrect] = useState<number>(0)
   const [isVictory, setIsVictory] = useState<boolean>(false)
@@ -40,7 +38,7 @@ export default function Home() {
     setHintLetters(new Set())
     setCorrectLetters(new Set())
     const word = await RandomWord()
-    setSecretPhrase(word.toUpperCase().trim())
+    setsecretWord(word.toUpperCase().trim())
   }
 
   const submitGuess = (letter: string, hint = false) => {
@@ -48,7 +46,7 @@ export default function Home() {
     const newGuesses = guesses.concat([letter])
     setGuesses(prevGuesses => newGuesses)
     // increment game state if guess was wrong
-    if (!secretPhrase.toUpperCase().includes(letter)) {
+    if (!secretWord.toUpperCase().includes(letter)) {
       setNumIncorrect(numIncorrect => numIncorrect + 1)
     } else {
       // check for victory
@@ -56,7 +54,7 @@ export default function Home() {
       if (hint) {
         setHintLetters(prev => new Set([...prev, letter]))
       }
-      if (new Set(secretPhrase).isSubsetOf(new Set(newGuesses))) {
+      if (new Set(secretWord).isSubsetOf(new Set(newGuesses))) {
         launchConfetti()
         setIsVictory(true)
       }
@@ -64,7 +62,7 @@ export default function Home() {
   }
 
   const revealHint = () => {
-    const possibleLetters = Array.from(new Set(secretPhrase).difference(new Set(guesses)))
+    const possibleLetters = Array.from(new Set(secretWord).difference(new Set(guesses)))
     const index = Math.floor(Math.random() * possibleLetters.length);
     const chosen = possibleLetters[index]
     submitGuess(chosen, true)
@@ -90,90 +88,57 @@ export default function Home() {
     }
     return "";
   }, [isVictory, numIncorrect]);
-
-  if (secretPhrase == "") {
+  
+  // wait to render the components until we have the secret word
+  if (secretWord == "") {
     return (
       <LoadingSpinner />
     )
   }
 
   return (
-    <div className="flex flex-col space-y-2">
-      <div className="flex justify-between p-2 gap-4">
-        <div className="flex grow justify-end gap-2">
-          <a href="https://www.github.com/nathanklein8/" target="_blank" rel="noopener noreferrer">
-            <Button variant="outline" size="icon"><LucideGithub /></Button>
-          </a>
-          <a href="https://www.linkedin.com/in/nathan-e-klein/" target="_blank" rel="noopener noreferrer">
-            <Button variant="outline" size="icon"><LucideLinkedin /></Button>
-          </a>
-        </div>
-        <div className="flex max-w-fit justify-center">
-          <h1 className="text-4xl font-bold italic underline">Hangman</h1>
-        </div>
-        <div className="flex grow justify-start gap-2">
-          <div className="w-10"></div>
-          <ModeToggle />
-        </div>
-      </div>
+    <div className="flex flex-col space-y-1">
+      <AppHeader />
 
-      <HungMan size={196} numIncorrect={numIncorrect} />
+      <HungMan
+        size={200}
+        numIncorrect={numIncorrect}
+        strokeWidth={1.5}
+      />
 
       <RenderPhrase
-        phrase={secretPhrase}
+        phrase={secretWord}
         guesses={guesses}
         isVictory={isVictory}
         state={numIncorrect}
         hintLetters={hintLetters}
       />
 
-      {isVictory || numIncorrect == failState ? // word definition button
-        <div className="flex flex-col items-center py-2 gap-1">
-          <p>{definitionPhrase}</p>
-          <a href={"https://en.wiktionary.org/wiki/" + secretPhrase.toLowerCase()} target="_blank" rel="noopener noreferrer">
-            <div className="text-blue-500 underline-offset-4 hover:underline flex items-center gap-2 font-medium text-[16px]">
-              <p>Wiktionary Definition</p> <div className="flex gap-0.5">
-                <BookOpen size={24} strokeWidth={1.5} /><Search size={24} strokeWidth={1.5} />
-              </div>
-            </div>
-          </a>
-        </div>
-        : <></>}
+      <WordDefinition
+        definitionPhrase={definitionPhrase}
+        secretWord={secretWord}
+        show={isVictory || numIncorrect == failState}
+      />
 
-      <div className={cn(isMobile ? "absolute inset-x-0 bottom-[5%]" : "", "")}>
-        <div className="relative">
-          <Keyboard
-            onKeyClick={(guess) => {
-              if (!isVictory && numIncorrect != failState) {
-                submitGuess(guess)
-              }
-            }}
-            onHintClick={revealHint}
-            onNewGameClick={() => {
-              if (isVictory || numIncorrect == failState) {
-                NewWord()
-              }
-            }}
-            guesses={new Set(guesses)}
-            correctLetters={correctLetters}
-            hintLetters={hintLetters}
-            hideHint={isVictory || numIncorrect < 4 || !hintAvailable || numIncorrect == failState}
-            renderMobile={isMobile}
-            blurred={isVictory || numIncorrect == failState}
-          />
-
-          {isVictory || numIncorrect == failState ? // new game button, positioned in center, relative to parent div
-            <Button
-              className="max-w-fit max-h-fit p-4 z-10 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-lg"
-              variant="destructive"
-              onClick={() => { NewWord() }}
-            >
-              New Game
-            </Button>
-            : <></>}
-
-        </div>
-      </div>
+      <Keyboard
+        onKeyClick={(guess) => {
+          if (!isVictory && numIncorrect != failState) {
+            submitGuess(guess)
+          }
+        }}
+        onHintClick={revealHint}
+        onNewGameClick={() => {
+          if (isVictory || numIncorrect == failState) {
+            NewWord()
+          }
+        }}
+        guesses={new Set(guesses)}
+        correctLetters={correctLetters}
+        hintLetters={hintLetters}
+        hideHint={numIncorrect < 4 || !hintAvailable}
+        renderMobile={isMobile}
+        blurred={isVictory || numIncorrect == failState}
+      />
 
       <div className="flex justify-center">
         <Confetti active={confettiTrigger} />
