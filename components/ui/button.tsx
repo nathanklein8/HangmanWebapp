@@ -17,7 +17,7 @@ const buttonVariants = cva(
         secondary:
           "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         keyboard:
-          "border-2 border-secondary/200 bg-secondary text-secondary-foreground",
+          "border-2 border-secondary/200 bg-secondary text-secondary-foreground hover:bg-secondary/50",
         keyboardGhost:
           "",
         ghost: "hover:bg-accent hover:text-accent-foreground",

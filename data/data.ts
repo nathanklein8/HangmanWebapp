@@ -52,7 +52,7 @@ const LoseDefinitionPhrases = [
     "Summon the sages",
     "Check the scrolls",
     "Ancient runes detected",
-    "Cast ‘Comprehend Languages’",
+    "I cast ‘Comprehend Language’",
     "Whomst invented this?",
     "Might be cursed",
     "A wild word appears!",
@@ -64,9 +64,5 @@ const LoseDefinitionPhrases = [
     "Lost in the linguistic sauce",
     "Should’ve brought a thesaurus",
 ];
-
-
-
-
 
 export { RandomWord, WinDefinitionPhrases, LoseDefinitionPhrases }
