@@ -11,6 +11,7 @@ type KeyboardProps = {
   hintLetters: Set<string>;
   hideHint: boolean;
   renderMobile: boolean;
+  blurred: boolean;
 };
 
 const keys = [
@@ -27,7 +28,8 @@ const Keyboard: React.FC<KeyboardProps> = ({
   correctLetters,
   hintLetters,
   hideHint,
-  renderMobile
+  renderMobile,
+  blurred,
 }) => {
   //** HANDLE KEYBOARD INPUT */
   useEffect(() => {
@@ -51,7 +53,7 @@ const Keyboard: React.FC<KeyboardProps> = ({
 
   return (
     <div className={cn(
-      'flex flex-col items-center',
+      'flex flex-col items-center', blurred ? 'blur-[2px]' : '' 
     )}>
       {keys.map((row, rowIndex) => (
         <div key={rowIndex} className={cn(

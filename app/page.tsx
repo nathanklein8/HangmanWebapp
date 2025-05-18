@@ -24,11 +24,8 @@ export default function Home() {
   const [hintLetters, setHintLetters] = useState<Set<string>>(new Set())
   const [correctLetters, setCorrectLetters] = useState<Set<string>>(new Set())
 
-  const [mounted, setMounted] = useState<boolean>(false)
-
   useEffect(() => {
     NewWord()
-    setTimeout(() => setMounted(true), 250)
   }, [])
 
   const launchConfetti = () => {
@@ -43,7 +40,7 @@ export default function Home() {
     setHintLetters(new Set())
     setCorrectLetters(new Set())
     const word = await RandomWord()
-    setSecretPhrase(word.toUpperCase())
+    setSecretPhrase(word.toUpperCase().trim())
   }
 
   const submitGuess = (letter: string, hint = false) => {
@@ -74,12 +71,12 @@ export default function Home() {
     setHintAvailable(false)
     setTimeout(() => {
       setHintAvailable(true)
-    }, 10000)
+    }, 10000) // 10 second hint cooldown
   }
 
-  if (!mounted) {
+  if (secretPhrase == "") {
     return (
-      <LoadingSpinner/>
+      <LoadingSpinner />
     )
   }
 
@@ -103,49 +100,48 @@ export default function Home() {
         </div>
       </div>
 
-      <HungMan size={135} numIncorrect={numIncorrect} />
+      <HungMan size={196} numIncorrect={numIncorrect} />
 
       <RenderPhrase phrase={secretPhrase} guesses={guesses} isVictory={isVictory} state={numIncorrect} />
 
-      <div className={isMobile ? "absolute inset-x-0 bottom-[5%]" : ""}>
-        <Keyboard
-          onKeyClick={(guess) => {
-            if (!isVictory && numIncorrect != failState) {
-              submitGuess(guess)
-            }
-          }}
-          onHintClick={revealHint}
-          onNewGameClick={() => {
-            if (isVictory || numIncorrect == failState) {
-              NewWord()
-            }
-          }}
-          guesses={new Set(guesses)}
-          correctLetters={correctLetters}
-          hintLetters={hintLetters}
-          hideHint={isVictory || numIncorrect < 4 || !hintAvailable || numIncorrect == failState}
-          renderMobile={isMobile}
-        />
+      <div className={cn(isMobile ? "absolute inset-x-0 bottom-[5%]" : "", "")}>
+        <div className="relative">
+          <Keyboard
+            onKeyClick={(guess) => {
+              if (!isVictory && numIncorrect != failState) {
+                submitGuess(guess)
+              }
+            }}
+            onHintClick={revealHint}
+            onNewGameClick={() => {
+              if (isVictory || numIncorrect == failState) {
+                NewWord()
+              }
+            }}
+            guesses={new Set(guesses)}
+            correctLetters={correctLetters}
+            hintLetters={hintLetters}
+            hideHint={isVictory || numIncorrect < 4 || !hintAvailable || numIncorrect == failState}
+            renderMobile={isMobile}
+            blurred={isVictory || numIncorrect == failState}
+          />
+
+          {isVictory || numIncorrect == failState ? // new game button, positioned in center, relative to parent div
+            <Button
+              className="max-w-fit max-h-fit p-4 z-10 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-lg"
+              variant="outline"
+              onClick={() => { NewWord() }}
+            >
+              New Game
+            </Button>
+            : <></>}
+
+        </div>
       </div>
 
       <div className="flex justify-center">
         <Confetti active={confettiTrigger} />
       </div>
-
-      {isVictory || numIncorrect == failState ?
-        <div className="flex-col text-center gap-2">
-          <Button
-            className="mb-1"
-            variant="outline"
-            onClick={() => { NewWord() }}
-          >New Game</Button>
-          {!isMobile
-            ? <p className="text-sm text-muted-foreground italic">
-              (Spacebar)
-            </p>
-            : <></>}
-        </div>
-        : <></>}
 
     </div>
   )
