@@ -4,17 +4,33 @@ import HungMan from "@/components/hung-man"
 import { useEffect, useState, useMemo } from "react"
 import Confetti from "react-dom-confetti"
 import { RenderPhrase } from "@/components/render-phrase"
-import { RandomWord, WinDefinitionPhrases, LoseDefinitionPhrases, failState } from "@/data/data"
+import { LoseDefinitionPhrases, RandomWord, WinDefinitionPhrases, failState } from "@/data/data"
 import Keyboard from "@/components/keyboard"
 import { isMobile } from 'react-device-detect';
 import LoadingSpinner from "@/components/loading-spinner"
 import WordDefinition from "@/components/word-definition"
 import AppHeader from "@/components/app-header"
+import { Word } from "@prisma/client"
 
 export default function Home() {
 
+  const [mounted, setMounted] = useState<boolean>(false);
+  const [data, setData] = useState<Word | null>(null)
+  const secretWord: string = useMemo(() => {
+    if (data) {
+      return data.text.trim().toUpperCase()
+    } else {
+      return ""
+    }
+  }, [data]);
+  const wordId: number | null = useMemo(() => {
+    if (data) {
+      return data.id
+    } else {
+      return null
+    }
+  }, [data])
   const [guesses, setGuesses] = useState<Array<string>>([])
-  const [secretWord, setsecretWord] = useState<string>("")
   const [confettiTrigger, setConfettiTrigger] = useState<boolean>(false)
   const [numIncorrect, setNumIncorrect] = useState<number>(0)
   const [isVictory, setIsVictory] = useState<boolean>(false)
@@ -23,6 +39,7 @@ export default function Home() {
   const [correctLetters, setCorrectLetters] = useState<Set<string>>(new Set())
 
   useEffect(() => {
+    setMounted(true)
     NewWord()
   }, [])
 
@@ -37,8 +54,8 @@ export default function Home() {
     setIsVictory(false)
     setHintLetters(new Set())
     setCorrectLetters(new Set())
-    const word = await RandomWord()
-    setsecretWord(word.toUpperCase().trim())
+    const data = await RandomWord()
+    setData(data)
   }
 
   const submitGuess = (letter: string, hint = false) => {
@@ -88,9 +105,10 @@ export default function Home() {
     }
     return "";
   }, [isVictory, numIncorrect]);
-  
-  // wait to render the components until we have the secret word
-  if (secretWord == "") {
+
+  // some components depend on theme, wait till this page gets mounted
+  // to get theme cookie so that content displays correctly
+  if (!mounted) {
     return (
       <LoadingSpinner />
     )

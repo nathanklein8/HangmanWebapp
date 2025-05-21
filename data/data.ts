@@ -1,10 +1,12 @@
-async function RandomWord(): Promise<string> {
+import { Word } from "@prisma/client";
+
+async function RandomWord(): Promise<Word> {
 
     try {
         const response = await fetch("/api/word");
         if (response.ok) {
             const data = await response.json();
-            return data.word;
+            return data;
         }
         else {
             throw new Error(`HTTP error! Status: ${response.status}`);
