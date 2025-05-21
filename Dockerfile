@@ -41,7 +41,9 @@ RUN chown nextjs:nodejs .next
 # Copy only necessary files from builder
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+COPY --from=builder --chown=nextjs:nodejs /app/prisma/schema.prisma ./prisma/schema.prisma
 COPY --from=builder --chown=nextjs:nodejs /app/prisma/seed.js ./prisma/seed.js
+COPY --from=builder --chown=nextjs:nodejs /app/data/filtered_words.txt ./data/filtered_words.txt
 
 USER nextjs
 

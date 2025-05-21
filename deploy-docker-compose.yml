@@ -1,0 +1,23 @@
+services:
+  db:
+    image: postgres:17-alpine
+    container_name: db
+    env_file: "hangman.env"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  app:
+    build: .
+    container_name: app
+    depends_on:
+      - db
+    env_file: "hangman.env"
+    ports:
+      - "2999:3000"
+    links:
+      - "db:postgres"
+
+volumes:
+  db_data:
