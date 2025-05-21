@@ -2,7 +2,6 @@
 
 import { failState } from "@/data/data";
 import { useTheme } from "next-themes";
-import { resolve } from "path";
 import * as React from "react";
 import { useState, useEffect } from "react";
 
@@ -20,13 +19,12 @@ const HungMan = (props: {
 
   const [bodyColor, setBodyColor] = useState<string>(themeColor)
 
-  // const bodyColor = props.numIncorrect == failState
-  //   ? "#d42a2a" // red
-  //   : themeColor
-
   useEffect(() => {
     if (props.numIncorrect == failState) {
       setTimeout(() => {
+        // need a slight delay so that when the last limb
+        // appears, it's color is white, then will
+        // appropriately fade to red
         setBodyColor("#d42a2a")
       }, 100)
     } else if (props.numIncorrect == 0) {
