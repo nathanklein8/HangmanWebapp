@@ -17,7 +17,7 @@ services:
     ports:
       - "2999:3000"
     links:
-      - "db:postgres"
+      - "db:database" # set db service alias to 'database' so app works
 
 volumes:
   db_data:
