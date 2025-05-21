@@ -1,8 +1,7 @@
 import { failState } from "@/data/data"
 import { cn } from "@/lib/utils"
-import { Loader2 } from "lucide-react"
 
-export const RenderPhrase = (props: {
+const RenderPhrase = (props: {
   phrase: string,
   state: number,
   isVictory: boolean,
@@ -10,55 +9,40 @@ export const RenderPhrase = (props: {
   hintLetters: Set<string>,
 }) => {
   if (props.phrase == "") {
-    // return an empty spacer div so that for the .1 second it takes to fetch
-    // the word, the content doesn't shift ugily
-    return <div className="flex justify-center items-center gap-1.5 min-h-8 text-muted-foreground">
-      {/* <Loader2 className="animate-spin" size={"20px"} /> <p>Generating Secret Word...</p> */}
-    </div>
+    return <div className="flex justify-center min-h-8"></div>
   }
   const text = (props.state == failState)
     ? props.phrase.toUpperCase()
     : props.phrase.toUpperCase().replace(/[A-Z]/g, char => props.guesses.indexOf(char) != -1 ? char : '_')
+  const textSize = (props.phrase.length > 10)
+    ? "text-lg sm:text-xl md:text-2xl lg:text-3xl"
+    : "text-2xl lg:text-3xl"
+  const letterWidth = (props.phrase.length > 10)
+    ? "min-w-[20px] sm:min-w-[24px] md:min-w-[28px] lg:min-w-[34px]"
+    : "min-w-[28px] lg:min-w-[34px]"
   return (
-    <div className="flex flex-wrap justify-center text-2xl gap-4 min-h-8">
-      {text.split(' ').map((word, i) => {
-        return <RenderWord
+    <div className={cn(
+      "flex flex-row justify-center min-h-8 gap-1",
+      textSize,
+    )}>
+      {Array.from(text).map((char, i) => {
+        return <RenderChar
           key={i}
-          word={word}
+          letter={char}
           state={props.state}
           isVictory={props.isVictory}
           guesses={props.guesses}
           hintLetters={props.hintLetters}
+          letterWidth={letterWidth}
         />
       })}
     </div>
   )
 }
 
-const RenderWord = (props: {
-  word: string,
-  state: number,
-  isVictory: boolean,
-  guesses: Array<string>,
-  hintLetters: Set<string>,
-}) => {
-  const gap = props.state == failState || props.isVictory ? "gap-0.5" : "gap-1" // gap between letters
-  return <div className={cn("flex flex-row", gap)}>
-    {Array.from(props.word).map((char, i) => {
-      return <RenderChar
-        key={i}
-        letter={char}
-        state={props.state}
-        isVictory={props.isVictory}
-        guesses={props.guesses}
-        hintLetters={props.hintLetters}
-      />
-    })}
-  </div>
-}
-
 const RenderChar = (props: {
   letter: string,
+  letterWidth: string,
   state: number,
   isVictory: boolean,
   guesses: Array<string>,
@@ -71,9 +55,11 @@ const RenderChar = (props: {
         ? "text-blue-600 dark:text-blue-500"
         : ""))
     : ""
-
-  const spacing = props.state == failState || props.isVictory || ",.?!-'\"()$".includes(props.letter) ? "min-w-1" : "min-w-[27px]"
-  return <div className={cn("text-center animated-div", color, spacing)}>
+  const width = props.state == failState || props.isVictory
+    ? "min-w-2"
+    : props.letterWidth
+  return <div className={cn("text-center phrase-char", color, width)}>
     {props.letter == '_' ? '__' : props.letter}
   </div>
 }
+export { RenderPhrase }

@@ -2,37 +2,38 @@
 
 import { failState } from "@/data/data";
 import { useTheme } from "next-themes";
+import { resolve } from "path";
 import * as React from "react";
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 
 const HungMan = (props: {
   size: number,
   numIncorrect: number,
   strokeWidth: number
 }) => {
-  const [mounted, setMounted] = useState<boolean>(false)
-
-  useEffect(() => {
-    setMounted(true)
-  })
 
   const { resolvedTheme } = useTheme()
 
-  // const color = mounted ? ( resolvedTheme === "dark" ? "#EFEFEF" : "#101010" ) : "#828282"
+  const themeColor = resolvedTheme === "dark"
+    ? "#EFEFEF"
+    : "#101010"
 
-  const color = mounted ? (
-    (resolvedTheme === "dark"
-      ? "#EFEFEF" :
-      "#101010")
-  ) : "#828282"
+  const [bodyColor, setBodyColor] = useState<string>(themeColor)
 
-  const bodyColor = mounted ? (
-    props.numIncorrect == failState
-      ? "#d42a2a"
-      : (resolvedTheme === "dark"
-        ? "#EFEFEF" :
-        "#101010")
-  ) : "#828282"
+  // const bodyColor = props.numIncorrect == failState
+  //   ? "#d42a2a" // red
+  //   : themeColor
+
+  useEffect(() => {
+    if (props.numIncorrect == failState) {
+      setTimeout(() => {
+        setBodyColor("#d42a2a")
+      }, 100)
+    } else if (props.numIncorrect == 0) {
+      setBodyColor(themeColor)
+    }
+  }, [props.numIncorrect])
+
 
   const head = <circle
     cx={18} cy={9} r={4} key={0}
@@ -66,7 +67,7 @@ const HungMan = (props: {
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
         strokeLinecap="round"
-        stroke={color}
+        stroke={themeColor}
         strokeWidth={props.strokeWidth}
       >
         <path d="M2 34H5M8 34H5M34 34H31M28 34H31M31 34V4C31 2.89543 30.1046 2 29 2H7C5.89543 2 5 2.89543 5 4V34" />

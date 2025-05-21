@@ -72,10 +72,13 @@
 @layer base {
   .animated-path {
     stroke-dasharray: 25;
+    transition: stroke 0.5s ease-in;
+  }
+  .phrase-char {
+    transition: all 1s ease-in-out, color 0.5s ease-in;
   }
   .animated-div {
-    transition: all 1.5s, color 0.5s linear;
-    transition-delay: 500
+    transition: all 0.5s ease-in-out;
   }
   .text-glow-dark {
     text-shadow: 0 0 12px #000000, 0 0 20px #890000, 0 0 42px #ff0000;

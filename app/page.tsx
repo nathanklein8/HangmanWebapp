@@ -49,6 +49,7 @@ export default function Home() {
   }
 
   async function NewWord() {
+    setData(null)
     setGuesses([])
     setNumIncorrect(0)
     setIsVictory(false)
@@ -115,7 +116,7 @@ export default function Home() {
   }
 
   return (
-    <div className="flex flex-col space-y-1">
+    <div className="flex flex-col space-y-1 min-h-fit min-h-svh">
       <AppHeader />
 
       <HungMan
@@ -137,6 +138,10 @@ export default function Home() {
         secretWord={secretWord}
         show={isVictory || numIncorrect == failState}
       />
+
+      {isMobile // spacer to push keyboard to bottom of screen on mobile
+        ? <div className="flex grow"></div>
+        : <></>}
 
       <Keyboard
         onKeyClick={(guess) => {
