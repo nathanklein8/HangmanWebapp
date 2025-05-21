@@ -14,20 +14,21 @@ Uses some shadcn/ui components
 
 ### 1. Clone repo
 
+Clone to a new folder, `hangman/`, in the cwd
 ```shell
-git clone --depth=1 https://github.com/nathanklein8/HangmanWebapp.git ./repo
+git clone --depth=1 https://github.com/nathanklein8/HangmanWebapp.git ./hangman
 ```
 
 ### 2. Build Docker image
 
 ```shell
-docker compose -f repo/deploy-docker-compose.yml build
+docker compose -f hangman/deploy-docker-compose.yml build
 ```
 
 
 ### 3. Set up .env file
 
-Create a file `repo/hangman.env`
+Create a file `hangman/hangman.env`
 
 (if you use a different filename, edit deploy-docker-compose.yml).
 
@@ -47,7 +48,7 @@ DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@database:${POSTG
 ### 4. Start Compose stack
 
 ```shell
-docker compose -f repo/deploy-docker-compose.yml up -d
+docker compose -f hangman/deploy-docker-compose.yml up -d
 ```
 
 
@@ -59,3 +60,4 @@ On a clean start, the db will be empty, to seed it with around 50k words run:
 docker exec app npx prisma migrate dev --name init &&
 docker exec app npm run prisma:seed
 ```
+*Note: if you changed the frontend service name (app) in the compose file, change it here too*
