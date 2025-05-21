@@ -2,11 +2,14 @@
 
 Deployed live <a href="https://app.nklein.xyz/">here</a>
 
-Next JS React App
+Stack:
+* Next.JS
+* Prisma
+* PostgreSQL
 
 Uses some shadcn/ui components
 
-## To run in a Docker container
+## To Build:
 
 1. Clone repo
 ```shell
