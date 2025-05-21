@@ -6,8 +6,8 @@
 
 generator client {
   provider = "prisma-client-js"
-// let the output default to node_modules/prisma for better standalone deployment
-//  output   = "../lib/generated/prisma"
+  // let the output default to node_modules/prisma for better standalone deployment
+  //  output   = "../lib/generated/prisma"
 }
 
 datasource db {
@@ -16,6 +16,25 @@ datasource db {
 }
 
 model Word {
-  id              Int       @id @default(autoincrement())
-  text            String    @unique
+  id           Int            @id @default(autoincrement())
+  text         String         @unique
+  DailyWord    DailyWord[]
+  DailyAttempt DailyAttempt[]
+}
+
+model DailyWord {
+  id     Int      @id @default(autoincrement())
+  date   DateTime @unique
+  word   Word     @relation(fields: [wordId], references: [id])
+  wordId Int
+}
+
+model DailyAttempt {
+  id        Int      @id @default(autoincrement())
+  date      DateTime
+  word      Word     @relation(fields: [wordId], references: [id])
+  wordId    Int
+  userToken String
+
+  @@unique([date, userToken])
 }

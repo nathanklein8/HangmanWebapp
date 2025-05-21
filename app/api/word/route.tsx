@@ -1,10 +1,26 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
+
+    const { searchParams } = new URL(req.url);
+    const idParam = searchParams.get('id');
+
+    if (idParam) {
+      const id = parseInt(idParam, 10);
+      if (isNaN(id)) {
+        return NextResponse.json({ error: 'Invalid id parameter' }, { status: 400 });
+      }
+      const data = await prisma.word.findUnique({ where: { id } });
+      if (!data) {
+        return NextResponse.json({ error: `No word found with id ${id}` }, { status: 404 });
+      }
+      return NextResponse.json(data);
+    }
+
     const [min, max] = await prisma.$transaction([
       prisma.word.findFirst({ orderBy: { id: 'asc' }, select: { id: true } }),
       prisma.word.findFirst({ orderBy: { id: 'desc' }, select: { id: true } }),
