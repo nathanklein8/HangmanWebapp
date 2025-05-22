@@ -40,7 +40,7 @@ export default function Home() {
 
   useEffect(() => {
     setMounted(true)
-    NewWord()
+    NewWord(puzzleMode)
   }, [puzzleMode])
 
   useEffect(() => {
@@ -53,14 +53,17 @@ export default function Home() {
     }
   }
 
-  async function NewWord() {
+  async function NewWord(mode: string) {
     setData(null)
+    setWordId(0)
+    setSecretWord("")
     setGuesses([])
     setNumIncorrect(0)
     setIsVictory(false)
     setHintLetters(new Set())
     setCorrectLetters(new Set())
-    if (puzzleMode == 'daily') {
+    setConfettiTrigger(false)
+    if (mode == 'daily') {
       const data = await GetDaily()
       setData(data)
       if (data.played) { setNumIncorrect(-1) }
@@ -88,7 +91,8 @@ export default function Home() {
         setHintLetters(prev => new Set([...prev, letter]))
       }
       if (new Set(secretWord).isSubsetOf(new Set(newGuesses))) {
-        launchConfetti()
+        // launchConfetti()
+        setConfettiTrigger(true)
         setIsVictory(true)
       }
     }
@@ -124,7 +128,7 @@ export default function Home() {
 
   const launchConfetti = () => {
     setConfettiTrigger(true)
-    setTimeout(() => setConfettiTrigger(false), 100)
+    // setTimeout(() => , 100)
   }
 
   // some components depend on theme, wait till this page gets mounted
@@ -163,8 +167,6 @@ export default function Home() {
         hintLetters={hintLetters}
       />
 
-
-
       {isVictory
         || numIncorrect == failState
         || numIncorrect == -1
@@ -181,6 +183,11 @@ export default function Home() {
         ? <div className="flex grow"></div>
         : <></>}
 
+      <div className="flex z-20 justify-around">
+        <Confetti active={confettiTrigger} />
+        <Confetti active={confettiTrigger} />
+      </div>
+
       <Keyboard
         onKeyClick={(guess) => {
           if (!isVictory && numIncorrect != failState) {
@@ -190,7 +197,10 @@ export default function Home() {
         onHintClick={revealHint}
         onNewGameClick={() => {
           if (isVictory || numIncorrect == failState) {
-            NewWord()
+            // if you new game on daily, it will just
+            // show the error.  might as well switch mode
+            if (puzzleMode != 'random') setPuzzleMode('random')
+            NewWord('random')
           }
         }}
         guesses={new Set(guesses)}
@@ -199,12 +209,8 @@ export default function Home() {
         hideHint={numIncorrect < 4 || !hintAvailable}
         renderMobile={isMobile}
         blurred={isVictory || numIncorrect == failState}
-        disabled={numIncorrect == -1} // && blurred
+        disabled={numIncorrect == -1 || secretWord == ""} // && blurred
       />
-
-      <div className="flex justify-center">
-        <Confetti active={confettiTrigger} />
-      </div>
 
     </div>
   )
