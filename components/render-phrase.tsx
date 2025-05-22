@@ -14,7 +14,7 @@ const RenderPhrase = (props: {
   if (props.played) {
     return <div className="flex flex-col items-center leading-none tracking-tight">
         <p className="text-lg">
-          You've already completed the Daily Puzzle!
+          You already completed the Daily Puzzle!
         </p>
         <p className="text-md text-muted-foreground italic whitespace-nowrap inline-flex items-center gap-1">
           {isMobile ? "Tap" : "Click"} <Dices size={20}/> to keep playing random puzzles

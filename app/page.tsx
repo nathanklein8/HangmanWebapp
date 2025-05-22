@@ -8,7 +8,6 @@ import {
   GetDaily,
   GetRandom,
   SubmitStat,
-  GetStats,
   WinDefinitionPhrases,
   LoseDefinitionPhrases,
   failState
@@ -18,15 +17,11 @@ import { isMobile } from 'react-device-detect';
 import LoadingSpinner from "@/components/loading-spinner"
 import WordDefinition from "@/components/word-definition"
 import AppHeader from "@/components/app-header"
-import { Word } from "@prisma/client"
-import { Button } from "@/components/ui/button"
 import { WordStats } from "@/components/word-stats"
-import { toast } from "sonner"
 
 export default function Home() {
 
   const [mounted, setMounted] = useState<boolean>(false);
-  const [data, setData] = useState<any | null>(null)
   const [secretWord, setSecretWord] = useState<string>("")
   const [wordId, setWordId] = useState<number>(0)
   const [guesses, setGuesses] = useState<Array<string>>([])
@@ -54,7 +49,7 @@ export default function Home() {
   }
 
   async function NewWord(mode: string) {
-    setData(null)
+    // reset all game state
     setWordId(0)
     setSecretWord("")
     setGuesses([])
@@ -65,13 +60,11 @@ export default function Home() {
     setConfettiTrigger(false)
     if (mode == 'daily') {
       const data = await GetDaily()
-      setData(data)
       if (data.played) { setNumIncorrect(-1) }
       setSecretWord(data.word ? data.word.text.toUpperCase() : "")
       setWordId(data.word ? data.word.id : 0)
     } else {
       const data = await GetRandom()
-      setData(data)
       setSecretWord(data.text.toUpperCase())
       setWordId(data.id)
     }
@@ -125,11 +118,6 @@ export default function Home() {
     }
     return "";
   }, [isVictory, numIncorrect]);
-
-  const launchConfetti = () => {
-    setConfettiTrigger(true)
-    // setTimeout(() => , 100)
-  }
 
   // some components depend on theme, wait till this page gets mounted
   // to get theme cookie so that content displays correctly

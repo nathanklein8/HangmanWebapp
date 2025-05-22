@@ -56,7 +56,7 @@ const Keyboard: React.FC<KeyboardProps> = ({
   }, [onKeyClick]);
 
   return (
-    <div className="relative py-2">
+    <div className="relative pb-4">
       <div className={cn(
         'flex flex-col items-center', blurred ? 'blur-[20px]' : ''
       )}>
