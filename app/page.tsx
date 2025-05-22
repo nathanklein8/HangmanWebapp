@@ -4,32 +4,31 @@ import HungMan from "@/components/hung-man"
 import { useEffect, useState, useMemo } from "react"
 import Confetti from "react-dom-confetti"
 import { RenderPhrase } from "@/components/render-phrase"
-import { LoseDefinitionPhrases, RandomWord, WinDefinitionPhrases, failState } from "@/data/data"
+import {
+  GetDaily,
+  GetRandom,
+  SubmitStat,
+  GetStats,
+  WinDefinitionPhrases,
+  LoseDefinitionPhrases,
+  failState
+} from "@/data/data"
 import Keyboard from "@/components/keyboard"
 import { isMobile } from 'react-device-detect';
 import LoadingSpinner from "@/components/loading-spinner"
 import WordDefinition from "@/components/word-definition"
 import AppHeader from "@/components/app-header"
 import { Word } from "@prisma/client"
+import { Button } from "@/components/ui/button"
+import { WordStats } from "@/components/word-stats"
+import { toast } from "sonner"
 
 export default function Home() {
 
   const [mounted, setMounted] = useState<boolean>(false);
-  const [data, setData] = useState<Word | null>(null)
-  const secretWord: string = useMemo(() => {
-    if (data) {
-      return data.text.trim().toUpperCase()
-    } else {
-      return ""
-    }
-  }, [data]);
-  const wordId: number | null = useMemo(() => {
-    if (data) {
-      return data.id
-    } else {
-      return null
-    }
-  }, [data])
+  const [data, setData] = useState<any | null>(null)
+  const [secretWord, setSecretWord] = useState<string>("")
+  const [wordId, setWordId] = useState<number>(0)
   const [guesses, setGuesses] = useState<Array<string>>([])
   const [confettiTrigger, setConfettiTrigger] = useState<boolean>(false)
   const [numIncorrect, setNumIncorrect] = useState<number>(0)
@@ -37,15 +36,21 @@ export default function Home() {
   const [hintAvailable, setHintAvailable] = useState<boolean>(true)
   const [hintLetters, setHintLetters] = useState<Set<string>>(new Set())
   const [correctLetters, setCorrectLetters] = useState<Set<string>>(new Set())
+  const [puzzleMode, setPuzzleMode] = useState<string>('daily')
 
   useEffect(() => {
     setMounted(true)
     NewWord()
-  }, [])
+  }, [puzzleMode])
 
-  const launchConfetti = () => {
-    setConfettiTrigger(true)
-    setTimeout(() => setConfettiTrigger(false), 1000)
+  useEffect(() => {
+    SubmitStats()
+  }, [isVictory, numIncorrect])
+
+  async function SubmitStats() {
+    if (isVictory || numIncorrect == failState) {
+      const res = await SubmitStat(wordId, isVictory, numIncorrect)
+    }
   }
 
   async function NewWord() {
@@ -55,8 +60,18 @@ export default function Home() {
     setIsVictory(false)
     setHintLetters(new Set())
     setCorrectLetters(new Set())
-    const data = await RandomWord()
-    setData(data)
+    if (puzzleMode == 'daily') {
+      const data = await GetDaily()
+      setData(data)
+      if (data.played) { setNumIncorrect(-1) }
+      setSecretWord(data.word ? data.word.text.toUpperCase() : "")
+      setWordId(data.word ? data.word.id : 0)
+    } else {
+      const data = await GetRandom()
+      setData(data)
+      setSecretWord(data.text.toUpperCase())
+      setWordId(data.id)
+    }
   }
 
   const submitGuess = (letter: string, hint = false) => {
@@ -107,6 +122,11 @@ export default function Home() {
     return "";
   }, [isVictory, numIncorrect]);
 
+  const launchConfetti = () => {
+    setConfettiTrigger(true)
+    setTimeout(() => setConfettiTrigger(false), 100)
+  }
+
   // some components depend on theme, wait till this page gets mounted
   // to get theme cookie so that content displays correctly
   if (!mounted) {
@@ -117,7 +137,16 @@ export default function Home() {
 
   return (
     <div className="flex flex-col space-y-1 min-h-fit min-h-svh">
-      <AppHeader />
+
+      <AppHeader
+        isDaily={puzzleMode == 'daily'}
+        onClick={() => {
+          let newMode = puzzleMode == 'daily'
+            ? 'random'
+            : 'daily'
+          setPuzzleMode(prev => newMode)
+        }}
+      />
 
       <HungMan
         size={200}
@@ -126,6 +155,7 @@ export default function Home() {
       />
 
       <RenderPhrase
+        played={numIncorrect == -1}
         phrase={secretWord}
         guesses={guesses}
         isVictory={isVictory}
@@ -133,11 +163,19 @@ export default function Home() {
         hintLetters={hintLetters}
       />
 
-      <WordDefinition
-        definitionPhrase={definitionPhrase}
-        secretWord={secretWord}
-        show={isVictory || numIncorrect == failState}
-      />
+
+
+      {isVictory
+        || numIncorrect == failState
+        || numIncorrect == -1
+        ? <div className="flex flex-col items-center">
+          <WordDefinition
+            definitionPhrase={definitionPhrase}
+            secretWord={secretWord}
+          />
+          <WordStats wordId={wordId} />
+        </div>
+        : <></>}
 
       {isMobile // spacer to push keyboard to bottom of screen on mobile
         ? <div className="flex grow"></div>
@@ -161,6 +199,7 @@ export default function Home() {
         hideHint={numIncorrect < 4 || !hintAvailable}
         renderMobile={isMobile}
         blurred={isVictory || numIncorrect == failState}
+        disabled={numIncorrect == -1} // && blurred
       />
 
       <div className="flex justify-center">

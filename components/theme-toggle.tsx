@@ -1,21 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useTheme } from "next-themes";
-import { Moon, Sun, SunMoon } from "lucide-react";
+import { Moon, Sun } from "lucide-react";
 import { Button } from "./ui/button";
 
-const ModeToggle = () => {
+const ThemeToggle = () => {
   const { resolvedTheme, setTheme } = useTheme();
 
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) {
-    return (<Button variant="outline" size="icon"><SunMoon /></Button>)
-  }
   return (
     <Button
       variant="outline" size="icon"
@@ -27,8 +18,7 @@ const ModeToggle = () => {
     >
       {resolvedTheme === "dark" ? <Sun /> : <Moon />}
     </Button>
-
   );
 };
 
-export default ModeToggle;
+export default ThemeToggle;

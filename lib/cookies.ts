@@ -15,7 +15,7 @@ export async function getOrCreateAnonymousId(): Promise<{ id: string; isNew: boo
   const newId = randomUUID();
   store.set(COOKIE_NAME, newId, {
     httpOnly: true,
-    maxAge: 60 * 60 * 24 * 7, // 1 week
+    maxAge: 60 * 60 * 24 * 365, // 1 year
     path: '/',
     sameSite: 'lax',
   });

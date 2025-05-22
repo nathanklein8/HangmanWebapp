@@ -19,7 +19,7 @@ model Word {
   id           Int            @id @default(autoincrement())
   text         String         @unique
   DailyWord    DailyWord[]
-  DailyAttempt DailyAttempt[]
+  WordAttempt WordAttempt[]
 }
 
 model DailyWord {
@@ -29,12 +29,12 @@ model DailyWord {
   wordId Int
 }
 
-model DailyAttempt {
+model WordAttempt {
   id        Int      @id @default(autoincrement())
   date      DateTime
   word      Word     @relation(fields: [wordId], references: [id])
   wordId    Int
   userToken String
-
-  @@unique([date, userToken])
+  won       Boolean
+  mistakes  Int
 }
