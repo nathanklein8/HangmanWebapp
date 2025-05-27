@@ -10,7 +10,7 @@ Stack:
 Uses some shadcn/ui components
 
 ## To Deploy:
-
+*(with a PostgreSQL db)*
 
 ### 1. Clone repo
 
@@ -28,20 +28,22 @@ docker compose -f hangman/deploy-docker-compose.yml build
 
 ### 3. Set up .env file
 
-Create a file `hangman/hangman.env`
+Create a file, `hangman/hangman.env`
 
 (if you use a different filename, edit deploy-docker-compose.yml).
 
-It should define the following env vars:
+It should define the following variables:
 
 ```shell
-# Shared DB config
+# DB config
 POSTGRES_USER=myuser
 POSTGRES_PASSWORD=mypassword
 POSTGRES_PORT=5432
+HOSTNAME=database # this should match alias/container name in compose.yml
+DB_NAME=test
 
 # Prisma-compatible DATABASE_URL
-DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@database:${POSTGRES_PORT}/prod
+DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${HOSTNAME}:${POSTGRES_PORT}/${DB_NAME}
 ```
 
 
