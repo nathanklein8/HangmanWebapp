@@ -36,7 +36,10 @@ export async function GET(req: NextRequest) {
       word = await prisma.word.findUnique({ where: { id: randomId } });
     }
 
-    return NextResponse.json(word);
+    return NextResponse.json({
+      played: false, // only needed for daily word, have it here for consistent usage in front end
+      word: word
+    });
   } catch (e) {
     console.error(e);
     return NextResponse.json({ error: 'Something went wrong' }, { status: 500 });

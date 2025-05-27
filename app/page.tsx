@@ -58,16 +58,10 @@ export default function Home() {
     setHintLetters(new Set())
     setCorrectLetters(new Set())
     setConfettiTrigger(false)
-    if (mode == 'daily') {
-      const data = await GetDaily()
-      if (data.played) { setNumIncorrect(-1) }
-      setSecretWord(data.word ? data.word.text.toUpperCase() : "")
-      setWordId(data.word ? data.word.id : 0)
-    } else {
-      const data = await GetRandom()
-      setSecretWord(data.text.toUpperCase())
-      setWordId(data.id)
-    }
+    const data = (mode == 'daily') ? await GetDaily() : await GetRandom()
+    if (data.played) { setNumIncorrect(-1) }
+    setSecretWord(data.word ? data.word.text.toUpperCase() : "")
+    setWordId(data.word ? data.word.id : 0)
   }
 
   const submitGuess = (letter: string, hint = false) => {

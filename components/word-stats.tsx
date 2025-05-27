@@ -1,6 +1,6 @@
 "use client"
 
-import { Bar, BarChart, XAxis, YAxis } from "recharts"
+import { Bar, BarChart, LabelList, XAxis, YAxis } from "recharts"
 import {
   ChartConfig,
   ChartContainer,
@@ -59,7 +59,7 @@ const WordStats = (props: {
     <div className="flex justify-center p-2 pr-3 mb-2">
       <Card className="max-w-fit relative">
         <CardHeader>
-          <CardTitle>Global Stats</CardTitle>
+          <CardTitle>Limbs Lost</CardTitle>
           <CardDescription>See how you stack up against others on this word.</CardDescription>
         </CardHeader>
         <CardContent>
@@ -70,24 +70,43 @@ const WordStats = (props: {
                 data={stats.histogram}
                 layout="vertical"
                 margin={{
-                  left: -20,
-                  right: 40,
+                  left: 20,
+                  right: 20,
                 }}
               >
-                <XAxis type="number" dataKey="count" hide />
                 <YAxis
                   dataKey="amount"
                   type="category"
                   tickLine={false}
                   tickMargin={10}
                   axisLine={false}
-                  tickFormatter={(value) => value.slice(0, 3)}
+                  hide
                 />
-                <ChartTooltip
+                <XAxis type="number" dataKey="count" hide />
+                {/* <ChartTooltip
                   cursor={false}
                   content={<ChartTooltipContent hideLabel />}
-                />
-                <Bar dataKey="count" fill="var(--color-count)" radius={5} />
+                /> */}
+                <Bar
+                  dataKey="count"
+                  layout="vertical"
+                  fill="var(--color-count)"
+                  radius={5} >
+                  <LabelList
+                    dataKey="count"
+                    position="right"
+                    offset={8}
+                    className="fill-foreground"
+                    fontSize={12}
+                  />
+                  <LabelList
+                    dataKey="amount"
+                    position="left"
+                    offset={8}
+                    className="fill-foreground"
+                    fontSize={12}
+                  />
+                </Bar>
               </BarChart>
             </ChartContainer>
             : <div className="flex justify-center items-center gap-1.5 min-h-10 text-muted-foreground">
@@ -103,7 +122,7 @@ const WordStats = (props: {
           </CardFooter>
           : <></>}
         <Button
-          className="bg-blue-500 hover:bg-blue-600 absolute -top-2 -right-2"
+          className="bg-blue-500 hover:bg-blue-600 absolute -top-2.5 -right-2.5"
           size={'smCircle'}
           variant={'outline'}
           onClick={() => {

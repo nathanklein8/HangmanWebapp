@@ -1,8 +1,9 @@
-import { getOrCreateAnonymousId } from "@/lib/cookies";
-import { DailyWord, Word } from "@prisma/client";
-import { startOfDay } from "date-fns";
+import { Word } from "@prisma/client";
 
-async function GetRandom(): Promise<Word> {
+async function GetRandom(): Promise<{
+  played: boolean,
+  word: Word | null
+}> {
 
   try {
     const response = await fetch("/api/word/random");
