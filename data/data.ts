@@ -1,36 +1,17 @@
 import { Word } from "@prisma/client";
 
-async function GetRandom(): Promise<{
+async function GetWord(type: "daily" | "random"): Promise<{
   played: boolean,
   word: Word | null
 }> {
 
   try {
-    const response = await fetch("/api/word/random");
+    const response = await fetch("/api/word/"+type);
     if (response.ok) {
       const data = await response.json();
       return data;
     } else {
       throw new Error(`GetRandom: HTTP error! Status: ${response.status} Error: ${response.json().then(x => x.error)}`);
-    }
-  } catch (error) {
-    console.error('Error making API request:', error);
-    throw error;
-  }
-
-}
-
-async function GetDaily(): Promise<{
-  played: boolean,
-  word: Word | null
-}> {
-  try {
-    const response = await fetch("/api/word/daily");
-    if (response.ok) {
-      const data = await response.json();
-      return data;
-    } else {
-      throw new Error(`GetDaily: HTTP error! Status: ${response.status} Error: ${response.json().then(x => x.error)}`);
     }
   } catch (error) {
     console.error('Error making API request:', error);
@@ -143,8 +124,7 @@ const LoseDefinitionPhrases = [
 ];
 
 export {
-  GetRandom,
-  GetDaily,
+  GetWord,
   SubmitStat,
   GetStats,
   WinDefinitionPhrases,

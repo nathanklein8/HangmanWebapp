@@ -5,12 +5,11 @@ import { useEffect, useState, useMemo } from "react"
 import Confetti from "react-dom-confetti"
 import { RenderPhrase } from "@/components/render-phrase"
 import {
-  GetDaily,
-  GetRandom,
   SubmitStat,
   WinDefinitionPhrases,
   LoseDefinitionPhrases,
-  failState
+  failState,
+  GetWord
 } from "@/data/data"
 import Keyboard from "@/components/keyboard"
 import { isMobile } from 'react-device-detect';
@@ -31,12 +30,12 @@ export default function Home() {
   const [hintAvailable, setHintAvailable] = useState<boolean>(true)
   const [hintLetters, setHintLetters] = useState<Set<string>>(new Set())
   const [correctLetters, setCorrectLetters] = useState<Set<string>>(new Set())
-  const [puzzleMode, setPuzzleMode] = useState<string>('daily')
+  const [puzzleMode, setPuzzleMode] = useState<"daily" | "random">("daily")
 
   useEffect(() => {
     setMounted(true)
-    NewWord(puzzleMode)
-  }, [puzzleMode])
+    NewWord("daily")
+  }, [])
 
   useEffect(() => {
     SubmitStats()
@@ -48,7 +47,7 @@ export default function Home() {
     }
   }
 
-  async function NewWord(mode: string) {
+  async function NewWord(mode: "daily" | "random") {
     // reset all game state
     setWordId(0)
     setSecretWord("")
@@ -58,10 +57,11 @@ export default function Home() {
     setHintLetters(new Set())
     setCorrectLetters(new Set())
     setConfettiTrigger(false)
-    const data = (mode == 'daily') ? await GetDaily() : await GetRandom()
+    const data = await GetWord(mode)
     if (data.played) { setNumIncorrect(-1) }
     setSecretWord(data.word ? data.word.text.toUpperCase() : "")
     setWordId(data.word ? data.word.id : 0)
+    setPuzzleMode(mode) // "daily" || "random"
   }
 
   const submitGuess = (letter: string, hint = false) => {
@@ -124,13 +124,14 @@ export default function Home() {
   return (
     <div className="flex flex-col space-y-1 min-h-fit min-h-svh">
 
+      {puzzleMode}
+
       <AppHeader
         isDaily={puzzleMode == 'daily'}
         onClick={() => {
-          let newMode = puzzleMode == 'daily'
+          NewWord(puzzleMode == 'daily'
             ? 'random'
-            : 'daily'
-          setPuzzleMode(prev => newMode)
+            : 'daily')
         }}
       />
 
@@ -181,7 +182,6 @@ export default function Home() {
           if (isVictory || numIncorrect == failState) {
             // if you new game on daily, it will just
             // show the error.  might as well switch mode
-            if (puzzleMode != 'random') setPuzzleMode('random')
             NewWord('random')
           }
         }}
