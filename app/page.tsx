@@ -4,32 +4,26 @@ import HungMan from "@/components/hung-man"
 import { useEffect, useState, useMemo } from "react"
 import Confetti from "react-dom-confetti"
 import { RenderPhrase } from "@/components/render-phrase"
-import { LoseDefinitionPhrases, RandomWord, WinDefinitionPhrases, failState } from "@/data/data"
+import {
+  GetDaily,
+  GetRandom,
+  SubmitStat,
+  WinDefinitionPhrases,
+  LoseDefinitionPhrases,
+  failState
+} from "@/data/data"
 import Keyboard from "@/components/keyboard"
 import { isMobile } from 'react-device-detect';
 import LoadingSpinner from "@/components/loading-spinner"
 import WordDefinition from "@/components/word-definition"
 import AppHeader from "@/components/app-header"
-import { Word } from "@prisma/client"
+import { WordStats } from "@/components/word-stats"
 
 export default function Home() {
 
   const [mounted, setMounted] = useState<boolean>(false);
-  const [data, setData] = useState<Word | null>(null)
-  const secretWord: string = useMemo(() => {
-    if (data) {
-      return data.text.trim().toUpperCase()
-    } else {
-      return ""
-    }
-  }, [data]);
-  const wordId: number | null = useMemo(() => {
-    if (data) {
-      return data.id
-    } else {
-      return null
-    }
-  }, [data])
+  const [secretWord, setSecretWord] = useState<string>("")
+  const [wordId, setWordId] = useState<number>(0)
   const [guesses, setGuesses] = useState<Array<string>>([])
   const [confettiTrigger, setConfettiTrigger] = useState<boolean>(false)
   const [numIncorrect, setNumIncorrect] = useState<number>(0)
@@ -37,26 +31,37 @@ export default function Home() {
   const [hintAvailable, setHintAvailable] = useState<boolean>(true)
   const [hintLetters, setHintLetters] = useState<Set<string>>(new Set())
   const [correctLetters, setCorrectLetters] = useState<Set<string>>(new Set())
+  const [puzzleMode, setPuzzleMode] = useState<string>('daily')
 
   useEffect(() => {
     setMounted(true)
-    NewWord()
-  }, [])
+    NewWord(puzzleMode)
+  }, [puzzleMode])
 
-  const launchConfetti = () => {
-    setConfettiTrigger(true)
-    setTimeout(() => setConfettiTrigger(false), 1000)
+  useEffect(() => {
+    SubmitStats()
+  }, [isVictory, numIncorrect])
+
+  async function SubmitStats() {
+    if (isVictory || numIncorrect == failState) {
+      const res = await SubmitStat(wordId, isVictory, numIncorrect)
+    }
   }
 
-  async function NewWord() {
-    setData(null)
+  async function NewWord(mode: string) {
+    // reset all game state
+    setWordId(0)
+    setSecretWord("")
     setGuesses([])
     setNumIncorrect(0)
     setIsVictory(false)
     setHintLetters(new Set())
     setCorrectLetters(new Set())
-    const data = await RandomWord()
-    setData(data)
+    setConfettiTrigger(false)
+    const data = (mode == 'daily') ? await GetDaily() : await GetRandom()
+    if (data.played) { setNumIncorrect(-1) }
+    setSecretWord(data.word ? data.word.text.toUpperCase() : "")
+    setWordId(data.word ? data.word.id : 0)
   }
 
   const submitGuess = (letter: string, hint = false) => {
@@ -73,7 +78,8 @@ export default function Home() {
         setHintLetters(prev => new Set([...prev, letter]))
       }
       if (new Set(secretWord).isSubsetOf(new Set(newGuesses))) {
-        launchConfetti()
+        // launchConfetti()
+        setConfettiTrigger(true)
         setIsVictory(true)
       }
     }
@@ -117,7 +123,16 @@ export default function Home() {
 
   return (
     <div className="flex flex-col space-y-1 min-h-fit min-h-svh">
-      <AppHeader />
+
+      <AppHeader
+        isDaily={puzzleMode == 'daily'}
+        onClick={() => {
+          let newMode = puzzleMode == 'daily'
+            ? 'random'
+            : 'daily'
+          setPuzzleMode(prev => newMode)
+        }}
+      />
 
       <HungMan
         size={200}
@@ -126,6 +141,7 @@ export default function Home() {
       />
 
       <RenderPhrase
+        played={numIncorrect == -1}
         phrase={secretWord}
         guesses={guesses}
         isVictory={isVictory}
@@ -133,15 +149,26 @@ export default function Home() {
         hintLetters={hintLetters}
       />
 
-      <WordDefinition
-        definitionPhrase={definitionPhrase}
-        secretWord={secretWord}
-        show={isVictory || numIncorrect == failState}
-      />
+      {isVictory
+        || numIncorrect == failState
+        || numIncorrect == -1
+        ? <div className="flex flex-col items-center">
+          <WordDefinition
+            definitionPhrase={definitionPhrase}
+            secretWord={secretWord}
+          />
+          <WordStats wordId={wordId} />
+        </div>
+        : <></>}
 
       {isMobile // spacer to push keyboard to bottom of screen on mobile
         ? <div className="flex grow"></div>
         : <></>}
+
+      <div className="flex z-20 justify-around">
+        <Confetti active={confettiTrigger} />
+        <Confetti active={confettiTrigger} />
+      </div>
 
       <Keyboard
         onKeyClick={(guess) => {
@@ -152,7 +179,10 @@ export default function Home() {
         onHintClick={revealHint}
         onNewGameClick={() => {
           if (isVictory || numIncorrect == failState) {
-            NewWord()
+            // if you new game on daily, it will just
+            // show the error.  might as well switch mode
+            if (puzzleMode != 'random') setPuzzleMode('random')
+            NewWord('random')
           }
         }}
         guesses={new Set(guesses)}
@@ -161,11 +191,8 @@ export default function Home() {
         hideHint={numIncorrect < 4 || !hintAvailable}
         renderMobile={isMobile}
         blurred={isVictory || numIncorrect == failState}
+        disabled={numIncorrect == -1 || secretWord == ""} // && blurred
       />
-
-      <div className="flex justify-center">
-        <Confetti active={confettiTrigger} />
-      </div>
 
     </div>
   )

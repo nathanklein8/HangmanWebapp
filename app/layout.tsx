@@ -5,6 +5,7 @@ import "../styles/globals.css";
 import { cn } from "@/lib/utils"
 import { cookies } from "next/headers";
 import { ThemeProvider } from "@/components/theme-provider";
+import { Toaster } from "@/components/ui/sonner"
 
 const fontSans = localFont({
   src: "../styles/fonts/inter.woff2",
@@ -28,7 +29,8 @@ export default async function RootLayout({
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <body className={cn("max-h-screen bg-background font-sans antialiased", fontSans.variable)}>
         <ThemeProvider attribute="class" storageKey="theme" defaultTheme="dark" enableSystem>
-          {children}
+          <main>{children}</main>
+          <Toaster />
         </ThemeProvider>
       </body>
     </html>

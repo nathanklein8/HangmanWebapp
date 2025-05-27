@@ -12,6 +12,7 @@ type KeyboardProps = {
   hideHint: boolean;
   renderMobile: boolean;
   blurred: boolean;
+  disabled?: boolean;
 };
 
 const keys = [
@@ -30,18 +31,21 @@ const Keyboard: React.FC<KeyboardProps> = ({
   hideHint,
   renderMobile,
   blurred,
+  disabled,
 }) => {
   //** HANDLE KEYBOARD INPUT */
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      const key = event.key.toUpperCase();
-      if (key == ' ') {
-        onNewGameClick();
-      } else if (key == '?') {
-        if (!hideHint) onHintClick()
-      } else if (keys[0].includes(key) || keys[1].includes(key) || keys[2].includes(key)) {
-        if (!guesses.has(key)) {
-          onKeyClick(key);
+      if (!disabled) {
+        const key = event.key.toUpperCase();
+        if (key == ' ') {
+          onNewGameClick();
+        } else if (key == '?') {
+          if (!hideHint) onHintClick()
+        } else if (keys[0].includes(key) || keys[1].includes(key) || keys[2].includes(key)) {
+          if (!guesses.has(key)) {
+            onKeyClick(key);
+          }
         }
       }
     };
@@ -52,9 +56,9 @@ const Keyboard: React.FC<KeyboardProps> = ({
   }, [onKeyClick]);
 
   return (
-    <div className="relative py-2">
+    <div className="relative pb-4">
       <div className={cn(
-        'flex flex-col items-center', blurred ? 'blur-[2px]' : ''
+        'flex flex-col items-center', blurred ? 'blur-[20px]' : ''
       )}>
         {keys.map((row, rowIndex) => (
           <div key={rowIndex} className={cn(
@@ -67,7 +71,7 @@ const Keyboard: React.FC<KeyboardProps> = ({
                     onClick={() => onKeyClick(key)}
                     variant={guesses.has(key) ? 'keyboardGhost' : 'keyboard'}
                     size={'keyboard'}
-                    disabled={guesses.has(key) || blurred}
+                    disabled={guesses.has(key) || blurred || disabled}
                     className={cn(
                       renderMobile ? 'h-12' : '',
                       correctLetters.has(key) ? (hintLetters.has(key) ? 'bg-blue-500' : 'bg-primary') : ''
@@ -91,8 +95,8 @@ const Keyboard: React.FC<KeyboardProps> = ({
       </div>
       {blurred ? // new game button, positioned in center, relative to parent div
         <Button
-          className="max-w-fit max-h-fit p-4 z-10 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-lg"
-          variant="destructive"
+          className="shadow-md max-w-fit max-h-fit p-4 z-10 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-md md:text-lg"
+          variant="outline"
           onClick={onNewGameClick}
         >
           New Game
