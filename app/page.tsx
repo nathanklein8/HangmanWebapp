@@ -123,9 +123,7 @@ export default function Home() {
 
   return (
     <div className="flex flex-col space-y-1 min-h-fit min-h-svh">
-
-      {puzzleMode}
-
+      
       <AppHeader
         isDaily={puzzleMode == 'daily'}
         onClick={() => {
