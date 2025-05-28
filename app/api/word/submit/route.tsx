@@ -1,12 +1,18 @@
 import { PrismaClient } from '@prisma/client';
 import { NextResponse } from 'next/server';
-import { getOrCreateAnonymousId } from '@/lib/cookies';
+import { getOrCreateAnonymousId, setDailyGuesses } from '@/lib/cookies';
 
 const prisma = new PrismaClient();
 
 export async function POST(req: Request) {
   try {
-    const { won, mistakes, wordId } = await req.json();
+    const {
+      won,
+      mistakes,
+      wordId,
+      guesses,
+      hintLetters,
+    } = await req.json();
 
     if (typeof won !== 'boolean'
       || typeof mistakes !== 'number'
@@ -15,6 +21,9 @@ export async function POST(req: Request) {
     }
 
     const { id: userToken } = await getOrCreateAnonymousId();
+    if (guesses) {
+      await setDailyGuesses(guesses, hintLetters)
+    }
 
     const today = new Date();
     today.setHours(0, 0, 0, 0); // normalize to midnight
@@ -30,9 +39,15 @@ export async function POST(req: Request) {
       },
     });
 
-    return NextResponse.json({ success: true, result });
-  } catch (err) {
-    console.error(err);
-    return NextResponse.json({ error: 'Server error' }, { status: 500 });
+    return NextResponse.json({
+      success: true,
+    });
+  } catch (e) {
+    console.error(e);
+    return NextResponse.json({
+      error: 'Server error'
+    }, {
+      status: 500
+    });
   }
 }

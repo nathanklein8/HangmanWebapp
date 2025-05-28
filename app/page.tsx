@@ -1,6 +1,6 @@
 "use client"
 
-import HungMan from "@/components/hung-man"
+import HangMan from "@/components/hang-man-graphic"
 import { useEffect, useState, useMemo } from "react"
 import Confetti from "react-dom-confetti"
 import { RenderPhrase } from "@/components/render-phrase"
@@ -17,6 +17,8 @@ import LoadingSpinner from "@/components/loading-spinner"
 import WordDefinition from "@/components/word-definition"
 import AppHeader from "@/components/app-header"
 import { WordStats } from "@/components/word-stats"
+import { Dices } from "lucide-react"
+import { toast } from "sonner"
 
 export default function Home() {
 
@@ -28,9 +30,8 @@ export default function Home() {
   const [numIncorrect, setNumIncorrect] = useState<number>(0)
   const [isVictory, setIsVictory] = useState<boolean>(false)
   const [hintAvailable, setHintAvailable] = useState<boolean>(true)
-  const [hintLetters, setHintLetters] = useState<Set<string>>(new Set())
-  const [correctLetters, setCorrectLetters] = useState<Set<string>>(new Set())
-  const [puzzleMode, setPuzzleMode] = useState<"daily" | "random">("daily")
+  const [hintLetters, setHintLetters] = useState<Array<string>>([])
+  const [puzzleMode, setPuzzleMode] = useState<"daily" | "random" | "played">("daily")
 
   useEffect(() => {
     setMounted(true)
@@ -38,30 +39,49 @@ export default function Home() {
   }, [])
 
   useEffect(() => {
+    async function SubmitStats() {
+      if (puzzleMode != "played" && (isVictory || numIncorrect == failState)) {
+        SubmitStat(
+          wordId,
+          isVictory,
+          numIncorrect,
+          (puzzleMode == "daily" ? guesses : null),
+          (puzzleMode == "daily" ? Array.from(hintLetters) : null),
+        )
+      }
+    }
     SubmitStats()
   }, [isVictory, numIncorrect])
 
-  async function SubmitStats() {
-    if (isVictory || numIncorrect == failState) {
-      const res = await SubmitStat(wordId, isVictory, numIncorrect)
-    }
-  }
-
+  // use this function to reset the game
   async function NewWord(mode: "daily" | "random") {
-    // reset all game state
+    setPuzzleMode(mode)
+    setConfettiTrigger(false)
     setWordId(0)
     setSecretWord("")
     setGuesses([])
+    setHintLetters([])
     setNumIncorrect(0)
     setIsVictory(false)
-    setHintLetters(new Set())
-    setCorrectLetters(new Set())
-    setConfettiTrigger(false)
     const data = await GetWord(mode)
-    if (data.played) { setNumIncorrect(-1) }
+    if (data.played) {
+      setPuzzleMode("played")
+      if (data.guesses && data.hintLetters) {
+        setGuesses(data.guesses)
+        setHintLetters(data.hintLetters)
+        const phraseSet = new Set(data.word.text.toUpperCase())
+        if (phraseSet.isSubsetOf(new Set(data.guesses))) {
+          setIsVictory(true)
+          setNumIncorrect(data.guesses.length - phraseSet.size)
+        } else {
+          setNumIncorrect(failState)
+        }
+      } else {
+        toast.error('whoopsie! something bad happened \\o/')
+      }
+    }
     setSecretWord(data.word ? data.word.text.toUpperCase() : "")
     setWordId(data.word ? data.word.id : 0)
-    setPuzzleMode(mode) // "daily" || "random"
   }
 
   const submitGuess = (letter: string, hint = false) => {
@@ -73,9 +93,9 @@ export default function Home() {
       setNumIncorrect(numIncorrect => numIncorrect + 1)
     } else {
       // check for victory
-      setCorrectLetters(prev => new Set([...prev, letter]))
       if (hint) {
-        setHintLetters(prev => new Set([...prev, letter]))
+        // setHintLetters(prev => new Set([...prev, letter]))
+        setHintLetters(prev => prev.concat([letter]))
       }
       if (new Set(secretWord).isSubsetOf(new Set(newGuesses))) {
         // launchConfetti()
@@ -123,24 +143,48 @@ export default function Home() {
 
   return (
     <div className="flex flex-col space-y-1 min-h-fit min-h-svh">
-      
+
+      {/* <p>word: {secretWord} id: {wordId}</p>
+
+      <p>guesses: {guesses} #: {guesses.length}</p>
+
+      <p>hints: {hintLetters} #: {hintLetters.length}</p>
+
+      <p>stored: {guesses.join('') + '$' + Array.from(hintLetters).join('')}</p>
+
+      <p>mode: {puzzleMode}</p>
+
+      <p>state: {numIncorrect} fail: {failState}</p>
+
+      <p>won? {isVictory ? 'yes' : 'no'}</p> */}
+
       <AppHeader
-        isDaily={puzzleMode == 'daily'}
+        isDaily={["daily", "played"].includes(puzzleMode)}
         onClick={() => {
-          NewWord(puzzleMode == 'daily'
+          NewWord(['daily', 'played'].includes(puzzleMode)
             ? 'random'
             : 'daily')
         }}
       />
 
-      <HungMan
+      <HangMan
         size={200}
         numIncorrect={numIncorrect}
         strokeWidth={1.5}
       />
 
+      {puzzleMode == "played"
+        ? <div className="flex flex-col items-center leading-none tracking-tight">
+          <p className="text-lg">
+            You already completed the Daily Puzzle!
+          </p>
+          {/* <p className="text-md text-muted-foreground italic whitespace-nowrap inline-flex items-center gap-1">
+            {isMobile ? "Tap" : "Click"} <Dices size={20} /> to keep playing random puzzles
+          </p> */}
+        </div>
+        : <></>}
+
       <RenderPhrase
-        played={numIncorrect == -1}
         phrase={secretWord}
         guesses={guesses}
         isVictory={isVictory}
@@ -153,7 +197,7 @@ export default function Home() {
         || numIncorrect == -1
         ? <div className="flex flex-col items-center">
           <WordDefinition
-            definitionPhrase={definitionPhrase}
+            definitionPhrase={puzzleMode == "played" ? '' : definitionPhrase}
             secretWord={secretWord}
           />
           <WordStats wordId={wordId} />
@@ -170,6 +214,7 @@ export default function Home() {
       </div>
 
       <Keyboard
+        phrase={secretWord}
         onKeyClick={(guess) => {
           if (!isVictory && numIncorrect != failState) {
             submitGuess(guess)
@@ -183,8 +228,7 @@ export default function Home() {
             NewWord('random')
           }
         }}
-        guesses={new Set(guesses)}
-        correctLetters={correctLetters}
+        guesses={guesses}
         hintLetters={hintLetters}
         hideHint={numIncorrect < 4 || !hintAvailable}
         renderMobile={isMobile}
