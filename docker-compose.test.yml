@@ -3,17 +3,6 @@
 # override file for test deployment
 services:
 
-  cloudbeaver:
-    container_name: hangman-cloudbeaver-test
-    image: dbeaver/cloudbeaver:latest
-    restart: unless-stopped
-    ports:
-      - "2998:8978"  # web ui
-    volumes:
-      - cloudbeaver-data:/opt/cloudbeaver/workspace
-    depends_on:
-      - db
-
   db:
     container_name: hangman-db-test
     volumes:
@@ -25,6 +14,7 @@ services:
       - ENV=test # needed by docker-entrypoint.sh
     ports:
       - 2999:3000
+      - 5555:5555 # prisma studio
 
 volumes:
   cloudbeaver-data:
