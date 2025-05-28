@@ -3,7 +3,7 @@ FROM node:18-alpine AS base
 
 FROM base AS deps
 
-# Install OS deps for Prisma
+# Install OS deps (for prisma ?)
 RUN apk add --no-cache libc6-compat openssl
 
 WORKDIR /app
@@ -35,15 +35,24 @@ WORKDIR /app
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
+# install netcat (nc)
+# for use in entrypoint script
+RUN apk add --no-cache netcat-openbsd
+
 RUN mkdir .next
 RUN chown nextjs:nodejs .next
 
-# Copy only necessary files from builder
+# Copy minimal files for standalone deployment
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
-COPY --from=builder --chown=nextjs:nodejs /app/prisma/schema.prisma ./prisma/schema.prisma
-COPY --from=builder --chown=nextjs:nodejs /app/prisma/seed.js ./prisma/seed.js
+
+# Copy necessary files for db setup & seeding
+COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
 COPY --from=builder --chown=nextjs:nodejs /app/data/filtered_words.txt ./data/filtered_words.txt
+
+# Copy entrypoint
+COPY --from=builder --chown=nextjs:nodejs /app/docker-entrypoint.sh ./
+RUN chmod +x docker-entrypoint.sh
 
 USER nextjs
 
@@ -53,4 +62,5 @@ ENV PORT 3000
 
 EXPOSE 3000
 
-CMD HOSTNAME="0.0.0.0" node server.js
+ENTRYPOINT ["./docker-entrypoint.sh"]
+CMD ["node", "server.js"]

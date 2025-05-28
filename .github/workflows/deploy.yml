@@ -1,0 +1,34 @@
+name: Deploy App
+
+on:
+  push:
+    branches:
+      - main # prod
+      - test
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    environment:
+      name: ${{ github.ref_name == 'main' && 'prod' || 'test' }}
+    env:
+      POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+      POSTGRES_DB: ${{ vars.POSTGRES_DB }}
+      POSTGRES_PORT: ${{ vars.POSTGRES_PORT }}
+      APP_PORT: ${{ vars.APP_PORT }}
+      ENV: ${{ vars.ENV }}
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Build and Start updated container
+        run: |
+          docker compose \
+            -f docker-compose.base.yml \
+            -f docker-compose.${ENV}.yml \
+            up -d --build --remove-orphans
+
+      - name: Cleanup unused images
+        run: docker image prune -f

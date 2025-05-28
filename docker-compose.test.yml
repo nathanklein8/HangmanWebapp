@@ -1,0 +1,16 @@
+# services to deploy only in test
+services:
+
+  cloudbeaver:
+    image: dbeaver/cloudbeaver:latest
+    container_name: cloudbeaver
+    restart: unless-stopped
+    ports:
+      - "2998:8978"  # web ui
+    volumes:
+      - cloudbeaver-data:/opt/cloudbeaver/workspace
+    depends_on:
+      - db
+
+volumes:
+  cloudbeaver-data:
