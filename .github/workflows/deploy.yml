@@ -33,12 +33,13 @@ jobs:
       - name: Connect App container to proxy network
         run: |
           CONTAINER_ID=$(docker compose -f docker-compose.base.yml -f docker-compose.${ENV}.yml ps -q app)
+          PROXY_NET=nathan_default
           if [ -n "$CONTAINER_ID" ]; then
-            if ! docker network inspect proxy-net | grep -q "$CONTAINER_ID"; then
-              docker network connect proxy-net "$CONTAINER_ID"
-              echo "Connected container to proxy-net"
+            if ! docker network inspect ${PROXY_NET} | grep -q "$CONTAINER_ID"; then
+              docker network connect ${PROXY_NET} "$CONTAINER_ID"
+              echo "Connected container to ${PROXY_NET}"
             else
-              echo "Container already connected to proxy-net"
+              echo "Container already connected to ${PROXY_NET}"
             fi
           else
             echo "App container not found"
