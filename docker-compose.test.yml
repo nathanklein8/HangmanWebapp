@@ -4,6 +4,7 @@
 services:
 
   cloudbeaver:
+    container_name: hangman-cloudbeaver-test
     image: dbeaver/cloudbeaver:latest
     restart: unless-stopped
     ports:
@@ -14,10 +15,12 @@ services:
       - db
 
   db:
+    container_name: hangman-db-test
     volumes:
       - db-data-test:/var/lib/postgresql/data
 
   app:
+    container_name: hangman-app-test
     environment:
       - ENV=test # needed by docker-entrypoint.sh
     ports:
