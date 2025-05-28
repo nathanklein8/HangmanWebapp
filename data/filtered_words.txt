@@ -42831,7 +42831,6 @@ speculative
 speculatively
 speculativeness
 speculator
-speculum
 speechdeliver
 speechify
 speechifying
@@ -42873,8 +42872,6 @@ spermatophyta
 spermatophyte
 spermatozoon
 spermicidal
-spermicide
-spermous
 sphacelate
 sphacelation
 sphacelotheca
@@ -50924,7 +50921,6 @@ whipstitch
 whiptail
 whirligig
 whirling
-whirlpook
 whirlpool
 whirlwind
 whirlwinds

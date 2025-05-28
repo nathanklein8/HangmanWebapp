@@ -1,0 +1,35 @@
+# services to deploy in both test and prod
+services:
+
+  db:
+    image: postgres:17-alpine
+    container_name: hangman-db-${ENV}
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    volumes:
+      - db-data-${ENV}:/var/lib/postgresql/data
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: hangman-${ENV}
+    restart: unless-stopped
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:${POSTGRES_PORT}/${POSTGRES_DB}
+      - ENV=${ENV} # pass so docker-entrypoint.sh knows what to do
+    ports:
+      - ${APP_PORT}:3000
+    depends_on:
+      - db
+
+volumes:
+  db-data-test:
+  db-data-prod:
+
+networks:
+  default:
+    name: hangman-net

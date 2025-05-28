@@ -29,7 +29,7 @@ yarn-debug.log*
 yarn-error.log*
 
 # local env files
-*.env
+*.env*
 *.local
 
 # vercel
@@ -42,5 +42,5 @@ next-env.d.ts
 #docker-compose.yml
 #docker-compose.yaml
 
-/prisma/migrations/*
-!/prisma/migrations/migration_lock.toml
+# /prisma/migrations/*
+# !/prisma/migrations/migration_lock.toml

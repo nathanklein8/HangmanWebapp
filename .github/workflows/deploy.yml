@@ -1,0 +1,54 @@
+name: Deploy App
+
+on:
+  push:
+    branches:
+      - main # prod
+      - test
+    # don't deploy on non code changes
+    paths-ignore:
+      - 'README.md'
+      - '**/README.md'
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    environment:
+      name: ${{ github.ref_name == 'main' && 'prod' || 'test' }}
+    env:
+      POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+      POSTGRES_DB: ${{ vars.POSTGRES_DB }}
+      POSTGRES_PORT: ${{ vars.POSTGRES_PORT }}
+      APP_PORT: ${{ vars.APP_PORT }}
+      ENV: ${{ github.ref_name == 'main' && 'prod' || 'test' }}
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Build and Start updated container
+        run: |
+          COMPOSE_BAKE=true docker compose \
+            -f docker-compose.base.yml \
+            -f docker-compose.${ENV}.yml \
+            up -d --build --remove-orphans
+
+      - name: Connect App container to proxy network
+        run: |
+          CONTAINER_ID=$(docker compose -f docker-compose.base.yml -f docker-compose.${ENV}.yml ps -q app)
+          PROXY_NET=nathan_default
+          if [ -n "$CONTAINER_ID" ]; then
+            if ! docker network inspect ${PROXY_NET} | grep -q "$CONTAINER_ID"; then
+              docker network connect ${PROXY_NET} "$CONTAINER_ID"
+              echo "Connected container to ${PROXY_NET}"
+            else
+              echo "Container already connected to ${PROXY_NET}"
+            fi
+          else
+            echo "App container not found"
+            exit 1
+          fi
+
+      - name: Cleanup unused images
+        run: docker image prune -f
