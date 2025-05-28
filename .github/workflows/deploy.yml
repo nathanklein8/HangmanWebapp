@@ -5,6 +5,10 @@ on:
     branches:
       - main # prod
       - test
+    # don't deploy on non code changes
+    paths-ignore:
+      - 'README.md'
+      - '**/README.md'
 
 jobs:
   deploy:
