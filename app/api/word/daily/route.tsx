@@ -50,17 +50,28 @@ export async function GET() {
       },
     });
 
-    const { guesses: guesses, hintLetters: hintLetters }
-      = !!alreadyPlayed
-        ? await getDailyGuesses()
-        : { guesses: null, hintLetters: null }
+    try {
+      const { guesses: guesses, hintLetters: hintLetters }
+        = !!alreadyPlayed
+          ? await getDailyGuesses()
+          : { guesses: null, hintLetters: null }
 
-    return NextResponse.json({
-      played: !!alreadyPlayed, // !! means to bool ?
-      word: daily.word,
-      guesses: guesses,
-      hintLetters: hintLetters,
-    });
+      return NextResponse.json({
+        played: !!alreadyPlayed, // !! means to bool ?
+        word: daily.word,
+        guesses: guesses,
+        hintLetters: hintLetters,
+      });
+    } catch (e) { // catch error reading in saved state cookie
+      return NextResponse.json({
+        played: !!alreadyPlayed, // !! means to bool ?
+        word: daily.word,
+        guesses: null,
+        hintLetters: null,
+      });
+    }
+
+
   } catch (e) {
     console.error(e);
     return NextResponse.json({

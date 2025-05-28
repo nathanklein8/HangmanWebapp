@@ -14,7 +14,7 @@ async function GetWord(type: "daily" | "random"): Promise<{
       const data = await response.json();
       return data;
     } else {
-      toast.error('Unable to fetch random word from Database!')
+      toast.error(`Unable to fetch ${type} word from Database!`)
       throw new Error(`GetRandom: HTTP error! Status: ${response.status} Error: ${response.json().then(x => x.error)}`);
     }
   } catch (error) {

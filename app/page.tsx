@@ -76,7 +76,7 @@ export default function Home() {
           setNumIncorrect(failState)
         }
       } else {
-        toast.error('whoopsie! something bad happened \\o/')
+        toast.error('Unable to load Daily Word saved state.  Did you clear cookies?')
       }
     }
     setSecretWord(data.word ? data.word.text.toUpperCase() : "")
