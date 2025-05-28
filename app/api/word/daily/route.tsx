@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
-import { getOrCreateAnonymousId } from '@/lib/cookies';
+import { getDailyGuesses, getOrCreateAnonymousId } from '@/lib/cookies';
 import { startOfDay } from 'date-fns';
 
 const prisma = new PrismaClient();
@@ -50,9 +50,16 @@ export async function GET() {
       },
     });
 
+    const { guesses: guesses, hintLetters: hintLetters }
+      = !!alreadyPlayed
+        ? await getDailyGuesses()
+        : { guesses: null, hintLetters: null }
+
     return NextResponse.json({
       played: !!alreadyPlayed, // !! means to bool ?
-      word: daily.word
+      word: daily.word,
+      guesses: guesses,
+      hintLetters: hintLetters,
     });
   } catch (e) {
     console.error(e);

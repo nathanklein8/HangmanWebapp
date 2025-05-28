@@ -3,12 +3,12 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 type KeyboardProps = {
+  phrase: string,
   onKeyClick: (key: string) => void;
   onHintClick: () => void;
   onNewGameClick: () => void;
-  guesses: Set<string>;
-  correctLetters: Set<string>;
-  hintLetters: Set<string>;
+  guesses: Array<string>;
+  hintLetters: Array<string>;
   hideHint: boolean;
   renderMobile: boolean;
   blurred: boolean;
@@ -22,11 +22,11 @@ const keys = [
 ];
 
 const Keyboard: React.FC<KeyboardProps> = ({
+  phrase,
   onKeyClick,
   onHintClick,
   onNewGameClick,
   guesses,
-  correctLetters,
   hintLetters,
   hideHint,
   renderMobile,
@@ -43,7 +43,7 @@ const Keyboard: React.FC<KeyboardProps> = ({
         } else if (key == '?') {
           if (!hideHint) onHintClick()
         } else if (keys[0].includes(key) || keys[1].includes(key) || keys[2].includes(key)) {
-          if (!guesses.has(key)) {
+          if (!guesses.includes(key)) {
             onKeyClick(key);
           }
         }
@@ -69,12 +69,14 @@ const Keyboard: React.FC<KeyboardProps> = ({
                 {key != '?'
                   ? <Button
                     onClick={() => onKeyClick(key)}
-                    variant={guesses.has(key) ? 'keyboardGhost' : 'keyboard'}
+                    variant={guesses.includes(key) ? 'keyboardGhost' : 'keyboard'}
                     size={'keyboard'}
-                    disabled={guesses.has(key) || blurred || disabled}
+                    disabled={guesses.includes(key) || blurred || disabled}
                     className={cn(
                       renderMobile ? 'h-12' : '',
-                      correctLetters.has(key) ? (hintLetters.has(key) ? 'bg-blue-500' : 'bg-primary') : ''
+                      (phrase.includes(key) && guesses.includes(key))
+                        ? (hintLetters.includes(key) ? 'bg-blue-500' : 'bg-primary')
+                        : ''
                     )}
                   >{key}</Button>
                   : (!hideHint && !blurred
@@ -99,7 +101,7 @@ const Keyboard: React.FC<KeyboardProps> = ({
           variant="outline"
           onClick={onNewGameClick}
         >
-          New Game
+         New Random Word
         </Button>
         : <></>}
     </div>

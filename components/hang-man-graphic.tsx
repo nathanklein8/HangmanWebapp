@@ -5,7 +5,7 @@ import { useTheme } from "next-themes";
 import * as React from "react";
 import { useState, useEffect } from "react";
 
-const HungMan = (props: {
+const HangMan = (props: {
   size: number,
   numIncorrect: number,
   strokeWidth: number
@@ -80,4 +80,4 @@ const HungMan = (props: {
   )
 
 }
-export default HungMan;
+export default HangMan;

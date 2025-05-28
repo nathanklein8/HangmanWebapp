@@ -1,36 +1,21 @@
 import { Word } from "@prisma/client";
+import { toast } from "sonner";
 
-async function GetRandom(): Promise<{
+async function GetWord(type: "daily" | "random"): Promise<{
   played: boolean,
-  word: Word | null
+  word: Word,
+  guesses: Array<string> | null,
+  hintLetters: Array<string> | null,
 }> {
 
   try {
-    const response = await fetch("/api/word/random");
+    const response = await fetch("/api/word/"+type);
     if (response.ok) {
       const data = await response.json();
       return data;
     } else {
+      toast.error('Unable to fetch random word from Database!')
       throw new Error(`GetRandom: HTTP error! Status: ${response.status} Error: ${response.json().then(x => x.error)}`);
-    }
-  } catch (error) {
-    console.error('Error making API request:', error);
-    throw error;
-  }
-
-}
-
-async function GetDaily(): Promise<{
-  played: boolean,
-  word: Word | null
-}> {
-  try {
-    const response = await fetch("/api/word/daily");
-    if (response.ok) {
-      const data = await response.json();
-      return data;
-    } else {
-      throw new Error(`GetDaily: HTTP error! Status: ${response.status} Error: ${response.json().then(x => x.error)}`);
     }
   } catch (error) {
     console.error('Error making API request:', error);
@@ -43,6 +28,8 @@ async function SubmitStat(
   wordId: number,
   won: boolean,
   mistakes: number,
+  guesses: Array<string> | null, // only pass for daily
+  hintLetters: Array<string> | null, // only pass for daily
 ): Promise<{ success: true, result: any }> {
   try {
     const response = await fetch('/api/word/submit', {
@@ -52,12 +39,15 @@ async function SubmitStat(
         won,
         mistakes,
         wordId,
+        guesses,
+        hintLetters,
       }),
     });
     if (response.ok) {
       const data = await response.json()
       return data;
     } else {
+      toast.error('Unable to submit attempt to Database!')
       throw new Error(`SubmitStat: HTTP error! Status: ${response.status} Error: ${response.json().then(x => x.error)}`);
     }
   } catch (error) {
@@ -77,9 +67,9 @@ async function GetStats(wordId: number): Promise<{
     const response = await fetch("/api/word/stats/?id="+wordId);
     if (response.ok) {
       const data = await response.json();
-      console.log(data)
       return data;
     } else {
+      toast.error('Unable to pull statistics from Database!')
       throw new Error(`GetStats: HTTP error! Status: ${response.status} Error: ${response.json().then(x => x.error)}`);
     }
   } catch (error) {
@@ -143,8 +133,7 @@ const LoseDefinitionPhrases = [
 ];
 
 export {
-  GetRandom,
-  GetDaily,
+  GetWord,
   SubmitStat,
   GetStats,
   WinDefinitionPhrases,
