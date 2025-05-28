@@ -101,7 +101,7 @@ const Keyboard: React.FC<KeyboardProps> = ({
           variant="outline"
           onClick={onNewGameClick}
         >
-          New Game
+         New Random Word
         </Button>
         : <></>}
     </div>

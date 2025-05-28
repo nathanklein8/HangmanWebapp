@@ -17,7 +17,6 @@ import LoadingSpinner from "@/components/loading-spinner"
 import WordDefinition from "@/components/word-definition"
 import AppHeader from "@/components/app-header"
 import { WordStats } from "@/components/word-stats"
-import { Dices } from "lucide-react"
 import { toast } from "sonner"
 
 export default function Home() {
@@ -144,20 +143,6 @@ export default function Home() {
   return (
     <div className="flex flex-col space-y-1 min-h-fit min-h-svh">
 
-      {/* <p>word: {secretWord} id: {wordId}</p>
-
-      <p>guesses: {guesses} #: {guesses.length}</p>
-
-      <p>hints: {hintLetters} #: {hintLetters.length}</p>
-
-      <p>stored: {guesses.join('') + '$' + Array.from(hintLetters).join('')}</p>
-
-      <p>mode: {puzzleMode}</p>
-
-      <p>state: {numIncorrect} fail: {failState}</p>
-
-      <p>won? {isVictory ? 'yes' : 'no'}</p> */}
-
       <AppHeader
         isDaily={["daily", "played"].includes(puzzleMode)}
         onClick={() => {
@@ -178,9 +163,6 @@ export default function Home() {
           <p className="text-lg">
             You already completed the Daily Puzzle!
           </p>
-          {/* <p className="text-md text-muted-foreground italic whitespace-nowrap inline-flex items-center gap-1">
-            {isMobile ? "Tap" : "Click"} <Dices size={20} /> to keep playing random puzzles
-          </p> */}
         </div>
         : <></>}
 
