@@ -1,1 +1,20 @@
-# services to deploy only in prod
+# docker-compose.prod.yml 
+#
+# override file for production deployment
+services:
+  db:
+    volumes:
+      - db-data-prod:/var/lib/postgresql/data
+
+  app:
+    environment:
+      - ENV=prod # needed by docker-entrypoint.sh
+    ports:
+      - 3000:3000
+
+volumes:
+  db-data-prod:
+
+networks:
+  default:
+    name: hangman-net-prod
