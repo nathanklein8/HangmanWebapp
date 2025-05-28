@@ -1,9 +1,10 @@
-# services to deploy only in test
+# docker-compose.test.yml 
+#
+# override file for test deployment
 services:
 
   cloudbeaver:
     image: dbeaver/cloudbeaver:latest
-    container_name: cloudbeaver
     restart: unless-stopped
     ports:
       - "2998:8978"  # web ui
@@ -12,5 +13,20 @@ services:
     depends_on:
       - db
 
+  db:
+    volumes:
+      - db-data-test:/var/lib/postgresql/data
+
+  app:
+    environment:
+      - ENV=test # needed by docker-entrypoint.sh
+    ports:
+      - 2999:3000
+
 volumes:
   cloudbeaver-data:
+  db-data-test:
+
+networks:
+  default:
+    name: hangman-net-test

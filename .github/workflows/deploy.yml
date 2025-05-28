@@ -22,6 +22,7 @@ jobs:
       POSTGRES_PORT: ${{ vars.POSTGRES_PORT }}
       APP_PORT: ${{ vars.APP_PORT }}
       ENV: ${{ github.ref_name == 'main' && 'prod' || 'test' }}
+      PROXY_NET: 'nathan_default'
 
     steps:
       - name: Checkout repo
@@ -30,14 +31,19 @@ jobs:
       - name: Build and Start updated container
         run: |
           COMPOSE_BAKE=true docker compose \
+            -p hangman_${ENV} \
             -f docker-compose.base.yml \
             -f docker-compose.${ENV}.yml \
             up -d --build --remove-orphans
 
-      - name: Connect App container to proxy network
+      - name: Connect App container to proxy network (prod only)
+        if: env.ENV == 'prod'
         run: |
-          CONTAINER_ID=$(docker compose -f docker-compose.base.yml -f docker-compose.${ENV}.yml ps -q app)
-          PROXY_NET=nathan_default
+          CONTAINER_ID=$(docker compose \
+            -p hangman-prod \
+            -f docker-compose.base.yml \
+            -f docker-compose.prod.yml \
+            ps -q app)
           if [ -n "$CONTAINER_ID" ]; then
             if ! docker network inspect ${PROXY_NET} | grep -q "$CONTAINER_ID"; then
               docker network connect ${PROXY_NET} "$CONTAINER_ID"
