@@ -25,10 +25,25 @@ jobs:
 
       - name: Build and Start updated container
         run: |
-          docker compose \
+          COMPOSE_BAKE=true docker compose \
             -f docker-compose.base.yml \
             -f docker-compose.${ENV}.yml \
             up -d --build --remove-orphans
+
+      - name: Connect App container to proxy network
+        run: |
+          CONTAINER_ID=$(docker compose -f docker-compose.base.yml -f docker-compose.${ENV}.yml ps -q app)
+          if [ -n "$CONTAINER_ID" ]; then
+            if ! docker network inspect proxy-net | grep -q "$CONTAINER_ID"; then
+              docker network connect proxy-net "$CONTAINER_ID"
+              echo "Connected container to proxy-net"
+            else
+              echo "Container already connected to proxy-net"
+            fi
+          else
+            echo "App container not found"
+            exit 1
+          fi
 
       - name: Cleanup unused images
         run: docker image prune -f

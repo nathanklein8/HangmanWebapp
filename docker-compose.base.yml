@@ -20,6 +20,7 @@ services:
     restart: unless-stopped
     environment:
       - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:${POSTGRES_PORT}/${POSTGRES_DB}
+      - ENV=${ENV} # pass so docker-entrypoint.sh knows what to do
     ports:
       - ${APP_PORT}:3000
     depends_on:
