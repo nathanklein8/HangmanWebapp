@@ -76,6 +76,7 @@ export default function Home() {
           setNumIncorrect(failState)
         }
       } else {
+        setSecretWord("") // to disable keyboard, and hide phrase
         toast.error('Unable to load Daily Word saved state.  Did you clear cookies?')
       }
     }
