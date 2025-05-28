@@ -40,7 +40,7 @@ jobs:
         if: env.ENV == 'prod'
         run: |
           CONTAINER_ID=$(docker compose \
-            -p hangman-prod \
+            -p hangman_prod \
             -f docker-compose.base.yml \
             -f docker-compose.prod.yml \
             ps -q app)
