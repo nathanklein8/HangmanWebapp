@@ -25,14 +25,11 @@ export async function POST(req: Request) {
       await setDailyGuesses(guesses, hintLetters)
     }
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0); // normalize to midnight
-
     // Insert attempt
     const result = await prisma.wordAttempt.create({
       data: {
         userToken,
-        date: today,
+        date: new Date(), // timestamp
         wordId,
         won,
         mistakes,
