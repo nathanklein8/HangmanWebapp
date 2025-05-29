@@ -56,9 +56,9 @@ const Keyboard: React.FC<KeyboardProps> = ({
   }, [onKeyClick]);
 
   return (
-    <div className="relative pb-4">
+    <div className="relative mb-4">
       <div className={cn(
-        'flex flex-col items-center', blurred ? 'blur-[20px]' : ''
+        'flex flex-col items-center', blurred ? 'opacity-40' : ''
       )}>
         {keys.map((row, rowIndex) => (
           <div key={rowIndex} className={cn(
@@ -97,7 +97,9 @@ const Keyboard: React.FC<KeyboardProps> = ({
       </div>
       {blurred ? // new game button, positioned in center, relative to parent div
         <Button
-          className="shadow-md max-w-fit max-h-fit p-4 z-10 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-md md:text-lg"
+          className="shadow-[0_0_50px] shadow-neutral-400 dark:shadow-neutral-700
+                    absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2
+                    text-md md:text-lg max-w-fit max-h-fit p-4 z-10"
           variant="outline"
           onClick={onNewGameClick}
         >

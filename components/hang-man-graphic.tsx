@@ -26,11 +26,11 @@ const HangMan = (props: {
         // appears, it's color is white, then will
         // appropriately fade to red
         setBodyColor("#d42a2a")
-      }, 100)
-    } else if (props.numIncorrect == 0) {
+      }, 200)
+    } else {
       setBodyColor(themeColor)
     }
-  }, [props.numIncorrect])
+  }, [props.numIncorrect, resolvedTheme])
 
 
   const head = <circle

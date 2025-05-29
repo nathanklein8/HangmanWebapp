@@ -80,14 +80,6 @@
   .animated-div {
     transition: all 0.5s ease-in-out;
   }
-  .text-glow-dark {
-    text-shadow: 0 0 12px #000000, 0 0 20px #890000, 0 0 42px #ff0000;
-    animation: glow-dark 2s linear;
-  }
-  .text-glow {
-    text-shadow: 0 0 12px #ffffff, 0 0 20px #ff6e6e, 0 0 42px #ff0000;
-    animation: glow 2s linear;
-  }
   .fade-in {
     animation: fadeInAnimation ease 2s;
     animation-iteration-count: 1;
@@ -99,7 +91,6 @@
     align-items: center;
     height: 100vh; /* Full viewport height for centering spinner on the page */
   }
-  
   .loadingSpinner {
     width: 50px;
     height: 50px;
@@ -111,14 +102,6 @@
   }
 }
 
-@keyframes glow-dark {
-  from { text-shadow: none; }
-  to { text-shadow: 0 0 12px #000000, 0 0 20px #890000, 0 0 42px #ff0000; }
-}
-@keyframes glow {
-  from { text-shadow: none; }
-  to { text-shadow: 0 0 12px #ffffff, 0 0 20px #ff6e6e, 0 0 42px #ff0000; }
-}
 @keyframes fadeInAnimation {
   from { opacity: 0; }
   to { opacity: 1; }
