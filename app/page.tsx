@@ -18,6 +18,7 @@ import WordDefinition from "@/components/word-definition"
 import AppHeader from "@/components/app-header"
 import { WordStats } from "@/components/word-stats"
 import { toast } from "sonner"
+import { FetchGameState, SaveGameState, ClearGameState } from "@/lib/client-cookies"
 
 export default function Home() {
 
@@ -65,6 +66,7 @@ export default function Home() {
     const data = await GetWord(mode)
     if (data.played) {
       setPuzzleMode("played")
+      ClearGameState()
       if (data.guesses && data.hintLetters) {
         setGuesses(data.guesses)
         setHintLetters(data.hintLetters)
@@ -79,12 +81,25 @@ export default function Home() {
         toast.error('Unable to load Daily Word saved state.  Did you clear cookies?')
         return
       }
+    } else {
+      if (mode == "daily") {
+        const saved = FetchGameState()
+        if (saved?.wordId == data.word.id) {
+          setGuesses(saved.guesses)
+          setNumIncorrect(saved.guesses.filter(
+            letter => !data.word.text.toUpperCase().includes(letter)
+          ).length)
+        }
+      }
     }
     setSecretWord(data.word ? data.word.text.toUpperCase() : "")
     setWordId(data.word ? data.word.id : 0)
   }
 
   const submitGuess = (letter: string, hint = false) => {
+    if (puzzleMode == 'daily') {
+      SaveGameState(wordId, guesses.join('') + letter)
+    }
     // add guess to set
     const newGuesses = guesses.concat([letter])
     setGuesses(prevGuesses => newGuesses)
@@ -94,13 +109,13 @@ export default function Home() {
     } else {
       // check for victory
       if (hint) {
-        // setHintLetters(prev => new Set([...prev, letter]))
         setHintLetters(prev => prev.concat([letter]))
       }
       if (new Set(secretWord).isSubsetOf(new Set(newGuesses))) {
         // launchConfetti()
         setConfettiTrigger(true)
         setIsVictory(true)
+        ClearGameState()
       }
     }
   }
