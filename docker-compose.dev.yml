@@ -6,7 +6,7 @@ services:
     restart: unless-stopped
     environment:
       POSTGRES_USER: devuser
-      POSTGRES_PASSWORD: devpass
+      POSTGRES_PASSWORD: supersecure
       POSTGRES_DB: devdb
     ports:
       - "5432:5432"

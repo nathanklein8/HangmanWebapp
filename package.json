@@ -24,6 +24,7 @@
     "date-fns": "^4.1.0",
     "dom-confetti": "^0.2.2",
     "input-otp": "^1.2.4",
+    "js-cookie": "^3.0.5",
     "lucide-react": "^0.411.0",
     "next": "15.3.2",
     "next-themes": "^0.3.0",
@@ -39,6 +40,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.7.0",
+    "@types/js-cookie": "^3.0.6",
     "@types/node": "^20",
     "@types/react": "18.3.12",
     "@types/react-dom": "18.3.1",

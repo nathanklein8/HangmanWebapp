@@ -1,7 +1,6 @@
 // lib/cookies.ts
 import { cookies } from 'next/headers';
 import { randomUUID } from 'crypto';
-import { tree } from 'next/dist/build/templates/app-page';
 
 const USER_ID_COOKIE = 'anonymous_user_id';
 const DAILY_WORD_COOKIE = 'daily_word_guesses';
