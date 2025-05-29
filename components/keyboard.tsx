@@ -100,10 +100,10 @@ const Keyboard: React.FC<KeyboardProps> = ({
           className="shadow-[0_0_50px] shadow-neutral-400 dark:shadow-neutral-700
                     absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2
                     text-md md:text-lg max-w-fit max-h-fit p-4 z-10"
-          variant="outline"
+          variant="altOutline"
           onClick={onNewGameClick}
         >
-         New Random Word
+         New Game
         </Button>
         : <></>}
     </div>

@@ -19,6 +19,7 @@ import AppHeader from "@/components/app-header"
 import { WordStats } from "@/components/word-stats"
 import { toast } from "sonner"
 import { FetchGameState, SaveGameState, ClearGameState } from "@/lib/client-cookies"
+import { CalendarFold, Dices } from "lucide-react"
 
 export default function Home() {
 
@@ -175,9 +176,18 @@ export default function Home() {
       />
 
       {puzzleMode == "played"
-        ? <div className="flex flex-col items-center leading-none tracking-tight">
+        ? <div className="flex flex-col items-center leading-none tracking-tight text-center px-2 pb-2">
           <p className="text-lg">
             You already completed the Daily Puzzle!
+          </p>
+          <p className="text-md text-muted-foreground italic text-wrap text-center">
+            {isMobile ? "Tap" : "Click"}{" "}
+            <span className="inline-flex items-center align-middle">
+              <Dices size={18} />
+            </span> | <span className="inline-flex items-center align-middle">
+              <CalendarFold size={18} />
+            </span> 
+            {" "}to toggle between Random and Daily puzzles
           </p>
         </div>
         : <></>}
