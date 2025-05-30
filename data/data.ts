@@ -15,11 +15,7 @@ async function GetWord(type: "daily" | "random"): Promise<{
       return data;
     } else {
       toast.error(`Unable to fetch ${type} word from Database!`)
-      return {
-        played: false,
-        word: null,
-      }
-      // throw new Error(`GetRandom: HTTP error! Status: ${response.status} Error: ${(await response.json()).error}`);
+      throw new Error(`GetRandom: HTTP error! Status: ${response.status} Error: ${(await response.json()).error}`);
     }
   } catch (error) {
     console.error('Error making API request:', error);
@@ -52,11 +48,7 @@ async function SubmitStat(
       return data;
     } else {
       toast.error('Unable to submit attempt to Database!')
-      return {
-        success: false,
-        result: null
-      }
-      //throw new Error(`SubmitStat: HTTP error! Status: ${response.status} Error: ${(await response.json()).error}`);
+      throw new Error(`SubmitStat: HTTP error! Status: ${response.status} Error: ${(await response.json()).error}`);
     }
   } catch (error) {
     console.error('Error making API request:', error);
