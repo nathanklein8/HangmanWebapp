@@ -25,7 +25,7 @@ model Word {
 model DailyWord {
   id     Int      @id @default(autoincrement())
   date   DateTime @unique
-  word   Word     @relation(fields: [wordId], references: [id])
+  word   Word     @relation(fields: [wordId], references: [id], onDelete: Cascade)
   wordId Int
 }
 
