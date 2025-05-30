@@ -33,7 +33,7 @@ model WordAttempt {
   id        Int      @id @default(autoincrement())
   userToken String
   date      DateTime
-  word      Word     @relation(fields: [wordId], references: [id])
+  word      Word     @relation(fields: [wordId], references: [id], onDelete: Cascade)
   wordId    Int
   won       Boolean
   mistakes  Int
