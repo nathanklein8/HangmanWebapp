@@ -41,6 +41,9 @@ export default function Home() {
 
   useEffect(() => {
     async function SubmitStats() {
+      if (puzzleMode == "daily") {
+        ClearGameState()
+      }
       if (puzzleMode != "played" && (isVictory || numIncorrect == failState)) {
         SubmitStat(
           wordId,
@@ -54,8 +57,9 @@ export default function Home() {
     SubmitStats()
   }, [isVictory, numIncorrect])
 
-  // use this function to reset the game
+
   async function NewWord(mode: "daily" | "random") {
+    // reset all game state
     setPuzzleMode(mode)
     setConfettiTrigger(false)
     setWordId(0)
@@ -64,11 +68,20 @@ export default function Home() {
     setHintLetters([])
     setNumIncorrect(0)
     setIsVictory(false)
+
+    // get a new word based on puzzle mode
     const data = await GetWord(mode)
+    setSecretWord(data.word ? data.word.text.toUpperCase() : "")
+    setWordId(data.word ? data.word.id : 0)
+
+    // handle new random game
+    if (mode == "random") { return }
+
+    // handle already played daily game
     if (data.played) {
       setPuzzleMode("played")
-      ClearGameState()
       if (data.guesses && data.hintLetters) {
+        // set game state based on server side cookie if api returned it
         setGuesses(data.guesses)
         setHintLetters(data.hintLetters)
         const phraseSet = new Set(data.word.text.toUpperCase())
@@ -79,22 +92,20 @@ export default function Home() {
           setNumIncorrect(failState)
         }
       } else {
-        toast.error('Unable to load Daily Word saved state.  Did you clear cookies?')
-        return
-      }
-    } else {
-      if (mode == "daily") {
-        const saved = FetchGameState()
-        if (saved?.wordId == data.word.id) {
-          setGuesses(saved.guesses)
-          setNumIncorrect(saved.guesses.filter(
-            letter => !data.word.text.toUpperCase().includes(letter)
-          ).length)
-        }
+        // case when server says user has played, but doesn't have game save
+        toast.error('Unable to load your Daily Word performance.  Are Cookies enabled??')
       }
     }
-    setSecretWord(data.word ? data.word.text.toUpperCase() : "")
-    setWordId(data.word ? data.word.id : 0)
+
+    // handle new or incomplete daily game
+    else {
+      const saved = FetchGameState()
+      if (saved && saved.wordId == data.word.id) {
+        // only update state if saved progress is for the same word
+        setGuesses(saved.guesses)
+        setNumIncorrect(saved.guesses.filter(l => !data.word.text.toUpperCase().includes(l)).length)
+      }
+    }
   }
 
   const submitGuess = (letter: string, hint = false) => {
@@ -116,7 +127,6 @@ export default function Home() {
         // launchConfetti()
         setConfettiTrigger(true)
         setIsVictory(true)
-        ClearGameState()
       }
     }
   }
@@ -161,11 +171,11 @@ export default function Home() {
     <div className="flex flex-col space-y-1 min-h-fit min-h-svh">
 
       <AppHeader
-        isDaily={["daily", "played"].includes(puzzleMode)}
+        isDaily={puzzleMode != 'random'}
         onClick={() => {
-          NewWord(['daily', 'played'].includes(puzzleMode)
-            ? 'random'
-            : 'daily')
+          NewWord(puzzleMode == 'random'
+            ? 'daily'
+            : 'random')
         }}
       />
 
@@ -186,7 +196,7 @@ export default function Home() {
               <Dices size={18} />
             </span> | <span className="inline-flex items-center align-middle">
               <CalendarFold size={18} />
-            </span> 
+            </span>
             {" "}to toggle between Random and Daily puzzles
           </p>
         </div>

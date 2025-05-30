@@ -4,8 +4,6 @@ import { Bar, BarChart, LabelList, XAxis, YAxis } from "recharts"
 import {
   ChartConfig,
   ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
 } from "@/components/ui/chart"
 import {
   Card,
@@ -59,7 +57,7 @@ const WordStats = (props: {
     <div className="flex justify-center p-2 pr-3 mb-2">
       <Card className="max-w-fit relative">
         <CardHeader>
-          <CardTitle>Limbs Lost</CardTitle>
+          <CardTitle>Mistakes Made</CardTitle>
           <CardDescription>See how you stack up against others on this word.</CardDescription>
         </CardHeader>
         <CardContent>
