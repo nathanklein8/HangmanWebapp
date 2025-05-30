@@ -21,7 +21,13 @@ const AppHeader = (props: {
     <div className="flex grow justify-end md:justify-start gap-2">
       <Button
         variant="outline" size="icon"
-        onClick={props.onClick}
+        onClick={(e) => {
+          e.currentTarget.blur(); // remove focus from mode toggle
+          // fixes bug: toggle to 'played' -> spacebar = double toggle mode
+          // because: spacebar keydown gets new random, then on keyup, spacebar
+          //          'clicks' the in focus button, getting the daily word again
+          props.onClick();
+        }}
       >
         {props.isDaily ? <Dices /> : <CalendarFold />}
       </Button>

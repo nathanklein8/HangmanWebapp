@@ -8,10 +8,11 @@ services:
       POSTGRES_USER: devuser
       POSTGRES_PASSWORD: supersecure
       POSTGRES_DB: devdb
+      TZ: America/New_York
     ports:
       - "5432:5432"
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - db-data-dev:/var/lib/postgresql/data
 
 volumes:
-  pgdata:
+  db-data-dev:

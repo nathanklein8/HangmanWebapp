@@ -4,18 +4,18 @@ import { toast } from "sonner";
 async function GetWord(type: "daily" | "random"): Promise<{
   played: boolean,
   word: Word,
-  guesses: Array<string> | null,
-  hintLetters: Array<string> | null,
+  guesses?: Array<string> | null,
+  hintLetters?: Array<string> | null,
 }> {
 
   try {
-    const response = await fetch("/api/word/"+type);
+    const response = await fetch("/api/word/" + type);
     if (response.ok) {
       const data = await response.json();
       return data;
     } else {
       toast.error(`Unable to fetch ${type} word from Database!`)
-      throw new Error(`GetRandom: HTTP error! Status: ${response.status} Error: ${response.json().then(x => x.error)}`);
+      throw new Error(`GetRandom: HTTP error! Status: ${response.status} Error: ${(await response.json()).error}`);
     }
   } catch (error) {
     console.error('Error making API request:', error);
@@ -30,7 +30,7 @@ async function SubmitStat(
   mistakes: number,
   guesses: Array<string> | null, // only pass for daily
   hintLetters: Array<string> | null, // only pass for daily
-): Promise<{ success: true, result: any }> {
+): Promise<{ success: boolean, result: any }> {
   try {
     const response = await fetch('/api/word/submit', {
       method: 'POST',
@@ -39,8 +39,8 @@ async function SubmitStat(
         won,
         mistakes,
         wordId,
-        guesses,
-        hintLetters,
+        guesses, // saved to server-side cookie in api route
+        hintLetters, // saved to server-side cookie in api route
       }),
     });
     if (response.ok) {
@@ -48,7 +48,7 @@ async function SubmitStat(
       return data;
     } else {
       toast.error('Unable to submit attempt to Database!')
-      throw new Error(`SubmitStat: HTTP error! Status: ${response.status} Error: ${response.json().then(x => x.error)}`);
+      throw new Error(`SubmitStat: HTTP error! Status: ${response.status} Error: ${(await response.json()).error}`);
     }
   } catch (error) {
     console.error('Error making API request:', error);
@@ -64,13 +64,13 @@ async function GetStats(wordId: number): Promise<{
   histogram: {},
 }> {
   try {
-    const response = await fetch("/api/word/stats/?id="+wordId);
+    const response = await fetch("/api/word/stats/?id=" + wordId);
     if (response.ok) {
       const data = await response.json();
       return data;
     } else {
       toast.error('Unable to pull statistics from Database!')
-      throw new Error(`GetStats: HTTP error! Status: ${response.status} Error: ${response.json().then(x => x.error)}`);
+      throw new Error(`GetStats: HTTP error! Status: ${response.status} Error: ${(await response.json()).error}`);
     }
   } catch (error) {
     console.error('Error making API request:', error);

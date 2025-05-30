@@ -28,8 +28,8 @@ async function getOrCreateAnonymousId(): Promise<{
 }
 
 async function getDailyGuesses(): Promise<{
-  guesses: Array<string>,
-  hintLetters: Array<string>
+  guesses: Array<string> | null,
+  hintLetters: Array<string> | null
 }> {
   const store = await cookies();
   const existing = store.get(DAILY_WORD_COOKIE);
@@ -40,7 +40,10 @@ async function getDailyGuesses(): Promise<{
       hintLetters: hintLetters.split('')
     };
   } else {
-    throw new Error('No cookie stored!')
+    return {
+      guesses: null,
+      hintLetters: null,
+    }
   }
 }
 

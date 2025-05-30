@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import { getDailyGuesses, getOrCreateAnonymousId } from '@/lib/cookies';
-import { startOfDay } from 'date-fns';
+import { endOfDay, startOfDay } from 'date-fns';
 
 const prisma = new PrismaClient();
 
@@ -44,7 +44,10 @@ export async function GET() {
 
     const alreadyPlayed = await prisma.wordAttempt.findFirst({
       where: {
-        date: today,
+        date: {
+          gte: startOfDay(today),
+          lte: endOfDay(today),
+        },
         userToken,
         wordId: daily.word.id, // ensure it's the daily word
       },
