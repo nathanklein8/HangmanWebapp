@@ -11,7 +11,7 @@ const AppHeader = (props: {
       <a href="https://www.github.com/nathanklein8/" target="_blank" rel="noopener noreferrer">
         <Button variant="outline" size="icon"><LucideGithub /></Button>
       </a>
-      <a href="https://www.linkedin.com/in/nathan-e-klein/" target="_blank" rel="noopener noreferrer">
+      <a href="https://www.linkedin.com/in/neklein/" target="_blank" rel="noopener noreferrer">
         <Button variant="outline" size="icon"><LucideLinkedin /></Button>
       </a>
     </div>
