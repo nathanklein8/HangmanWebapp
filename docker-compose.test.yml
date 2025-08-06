@@ -17,7 +17,6 @@ services:
       - 5555:5555 # prisma studio
 
 volumes:
-  cloudbeaver-data:
   db-data-test:
 
 networks:
