@@ -10,10 +10,12 @@ const ThemeToggle = () => {
   return (
     <Button
       variant="outline" size="icon"
-      onClick={() => {
+      onClick={(e) => {
         const newTheme = resolvedTheme === "dark" ? "light" : "dark";
         setTheme(newTheme);
         document.cookie = `theme=${newTheme}; path=/`;
+        e.currentTarget.blur(); // remove focus from mode toggle
+        // ^ spacebar for new game could trigger button if still focused
       }}
     >
       {resolvedTheme === "dark" ? <Sun /> : <Moon />}
