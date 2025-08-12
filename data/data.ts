@@ -90,7 +90,7 @@ const WinDefinitionPhrases = [
   "Flex those syllables",
   "Rolled a nat 20 on vocabulary",
   "You’re a certified wordsmith",
-  "Well-read and well-fed",
+  "Well-read!",
   "A true lexical legend",
   "The word never stood a chance",
   "You’ve unlocked bonus knowledge",
