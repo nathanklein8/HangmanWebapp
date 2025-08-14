@@ -7,7 +7,7 @@ type GameState = {
   guesses: Array<string>;
 };
 
-const COOKIE_NAME = 'PARTIAL_SAVE_STATE';
+const COOKIE_NAME = 'CLIENT_SIDE_SAVE';
 
 export function SaveGameState(wordId: number, guesses: string) {
   const cookieData = {

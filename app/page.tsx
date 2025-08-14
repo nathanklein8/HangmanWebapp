@@ -18,8 +18,9 @@ import WordDefinition from "@/components/word-definition"
 import AppHeader from "@/components/app-header"
 import { WordStats } from "@/components/word-stats"
 import { toast } from "sonner"
-import { FetchGameState, SaveGameState, ClearGameState } from "@/lib/client-cookies"
+import { FetchGameState, SaveGameState, ClearGameState } from "@/lib/client-side-save"
 import { CalendarFold, Dices } from "lucide-react"
+import { setDailyGuesses } from "@/lib/cookies"
 
 export default function Home() {
 
@@ -40,21 +41,23 @@ export default function Home() {
   }, [])
 
   useEffect(() => {
-    async function SubmitStats() {
-      if (puzzleMode == "daily") {
-        ClearGameState()
+    if (numIncorrect == failState || isVictory) {
+      async function SubmitStats() {
+        if (puzzleMode == "daily") {
+          ClearGameState()
+        }
+        if (puzzleMode != "played" && (isVictory || numIncorrect == failState)) {
+          SubmitStat(
+            wordId,
+            isVictory,
+            numIncorrect,
+            (puzzleMode == "daily" ? guesses : null),
+            (puzzleMode == "daily" ? Array.from(hintLetters) : null),
+          )
+        }
       }
-      if (puzzleMode != "played" && (isVictory || numIncorrect == failState)) {
-        SubmitStat(
-          wordId,
-          isVictory,
-          numIncorrect,
-          (puzzleMode == "daily" ? guesses : null),
-          (puzzleMode == "daily" ? Array.from(hintLetters) : null),
-        )
-      }
+      SubmitStats()
     }
-    SubmitStats()
   }, [isVictory, numIncorrect])
 
 
@@ -94,6 +97,7 @@ export default function Home() {
       } else {
         // case when server says user has played, but doesn't have game save
         toast.error('Unable to load your Daily Word performance.  Are Cookies enabled??')
+        setNumIncorrect(failState)
       }
     }
 
