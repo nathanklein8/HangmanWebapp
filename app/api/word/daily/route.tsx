@@ -52,27 +52,14 @@ export async function GET() {
         wordId: daily.word.id, // ensure it's the daily word
       },
     });
-
-    try {
-      const { guesses: guesses, hintLetters: hintLetters }
-        = !!alreadyPlayed
-          ? await getDailyGuesses()
-          : { guesses: null, hintLetters: null }
-
-      return NextResponse.json({
-        played: !!alreadyPlayed, // !! means to bool ?
-        word: daily.word,
-        guesses: guesses,
-        hintLetters: hintLetters,
-      });
-    } catch (e) { // catch error reading in saved state cookie
-      return NextResponse.json({
-        played: !!alreadyPlayed, // !! means to bool ?
-        word: daily.word,
-        guesses: null,
-        hintLetters: null,
-      });
-    }
+    
+    const saved_game_state = await getDailyGuesses()
+    return NextResponse.json({
+      played: !!alreadyPlayed, // !! means to bool ?
+      word: daily.word,
+      guesses: saved_game_state.guesses,
+      hintLetters: saved_game_state.hintLetters,
+    });
 
 
   } catch (e) {
