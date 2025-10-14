@@ -15,6 +15,7 @@ services:
 
   app:
     build: .
+    image: ${IMAGE_NAME}
     restart: unless-stopped
     environment:
       - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:${POSTGRES_PORT}/${POSTGRES_DB}

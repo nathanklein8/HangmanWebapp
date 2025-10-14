@@ -24,7 +24,7 @@ COPY . .
 RUN npx prisma generate
 
 # Build the Next.js app
-ENV NEXT_TELEMETRY_DISABLED 1
+ENV NEXT_TELEMETRY_DISABLED=1
 RUN npm run build
 
 # Stage 3: Production image
@@ -56,9 +56,9 @@ RUN chmod +x docker-entrypoint.sh
 
 USER nextjs
 
-ENV NODE_ENV production
-ENV NEXT_TELEMETRY_DISABLED 1
-ENV PORT 3000
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV PORT=3000
 
 EXPOSE 3000
 

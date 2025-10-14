@@ -10,8 +10,6 @@ services:
 
   app:
     container_name: hangman-app-test
-    environment:
-      - ENV=test # needed by docker-entrypoint.sh
     ports:
       - 2999:3000
       - 5555:5555 # prisma studio

@@ -9,8 +9,6 @@ services:
 
   app:
     container_name: hangman-app-prod
-    environment:
-      - ENV=prod # needed by docker-entrypoint.sh
     ports:
       - 3000:3000
 
