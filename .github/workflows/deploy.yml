@@ -13,12 +13,14 @@ on:
 jobs:
   deploy:
     runs-on: self-hosted
-    
+    environment:
+      name: ${{ github.ref_name == 'main' && 'prod' || 'test' }}
     env:
+      POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+      POSTGRES_DB: ${{ vars.POSTGRES_DB }}
+      POSTGRES_PORT: ${{ vars.POSTGRES_PORT }}
       ENV: ${{ github.ref_name == 'main' && 'prod' || 'test' }}
-
-      DATABASE_URL: 'postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@db:${{ vars.POSTGRES_PORT }}/${{ vars.POSTGRES_DB }}'
-
       PROXY_NET: 'nathan_default'
 
     steps:
