@@ -49,8 +49,16 @@ jobs:
       - name: Push Image to GHCR
         run: docker push ${IMAGE_NAME}
 
-      - name: Start container
+      - name: Deploy containers
         run: |
+          docker compose \
+            -f docker-compose.base.yml \
+            -f docker-compose.${ENV}.yml \
+            stop
+          docker compose \
+            -f docker-compose.base.yml \
+            -f docker-compose.${ENV}.yml \
+            rm --force
           docker compose \
             -f docker-compose.base.yml \
             -f docker-compose.${ENV}.yml \
