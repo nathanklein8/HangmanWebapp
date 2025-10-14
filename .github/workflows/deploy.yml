@@ -20,7 +20,7 @@ jobs:
     
     env:
       PROXY_NET: "nathan_default"
-      IMAGE_NAME: "ghcr.io/nathanklein8/HangmanWebapp:${{ github.ref_name == 'main' && 'latest' || 'test' }}"
+      IMAGE_NAME: "ghcr.io/nathanklein8/hangmanwebapp:${{ github.ref_name == 'main' && 'latest' || 'test' }}"
 
       # need to be set at build time
       ENV: ${{ github.ref_name == 'main' && 'prod' || 'test' }}
