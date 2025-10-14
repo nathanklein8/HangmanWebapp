@@ -69,8 +69,6 @@ jobs:
             DATABASE_URL=postgresql://${{ env.POSTGRES_USER }}:${{ env.POSTGRES_PASSWORD }}@db:${{ env.POSTGRES_PORT }}/${{ env.POSTGRES_DB }}
             ENV=${{ env.ENV }}
           provenance: false
-          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache
-          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache,mode=max
 
       - name: Generate artifact attestation
         uses: actions/attest-build-provenance@v3
