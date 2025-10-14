@@ -14,13 +14,20 @@ jobs:
   deploy:
     runs-on: self-hosted
 
+    permissions:
+      contents: read
+      packages: write
+      attestations: write
+      id-token: write
+
     # use correct github vars & secrets environemtns based on branch
     environment:
       name: ${{ github.ref_name == 'main' && 'prod' || 'test' }}
     
     env:
       PROXY_NET: "nathan_default"
-      IMAGE_NAME: "ghcr.io/nathanklein8/hangmanwebapp:${{ github.ref_name == 'main' && 'latest' || 'test' }}"
+      REGISTRY: ghcr.io
+      IMAGE_NAME: ${{ github.repository }}
 
       # need to be set at build time
       ENV: ${{ github.ref_name == 'main' && 'prod' || 'test' }}
@@ -33,21 +40,41 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Build image
-        run: |
-          COMPOSE_BAKE=true docker compose \
-            -f docker-compose.base.yml \
-            build app
+      - name: Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository_owner }}/my-app
+          tags: |
+            type=ref,event=branch
+            type=sha
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
         with:
-          registry: ghcr.io
+          registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
-          password: ${{ secrets.GHCR_TOKEN }}
+          password: ${{ secrets.GITHUB_TOKEN }}
       
-      - name: Push Image to GHCR
-        run: docker push ${IMAGE_NAME}
+      - name: Build and push Docker image
+        id: build
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            DATABASE_URL=postgresql://${{ env.POSTGRES_USER }}:${{ env.POSTGRES_PASSWORD }}@db:${{ env.POSTGRES_PORT }}/${{ env.POSTGRES_DB }}
+            ENV=${{ env.ENV }}
+          provenance: false
+
+      - name: Generate artifact attestation
+        uses: actions/attest-build-provenance@v3
+        with:
+          subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}
+          subject-digest: ${{ steps.push.outputs.digest }}
+          push-to-registry: true
 
       - name: Deploy containers
         run: |
