@@ -47,7 +47,6 @@ jobs:
           tags: |
             type=ref,event=branch
             type=sha
-            # Add "latest" only for main
             type=raw,value=latest,enable=${{ github.ref_name == 'main' }}
 
       - name: Login to GitHub Container Registry
@@ -55,7 +54,7 @@ jobs:
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          password: ${{ secrets.GHCR_TOKEN }}
       
       - name: Build and push Docker image
         id: build
