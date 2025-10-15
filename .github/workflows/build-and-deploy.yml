@@ -81,6 +81,19 @@ jobs:
           subject-digest: ${{ steps.build.outputs.digest }}
           push-to-registry: true
 
+      - name: Debug
+        run: |
+          echo "github.event.repository.name = ${{ github.event.repository.name }}"
+          echo "registry/image_name = ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}"
+
+      # - name: Cleanup old GHCR image versions
+      #   uses: actions/delete-package-versions@v5
+      #   with:
+      #     package-name: ${{ github.event.repository.name }}
+      #     package-type: container
+      #     min-versions-to-keep: 1
+      #     delete-only-untagged-versions: false
+
   deploy:
     needs: [build]
     runs-on: self-hosted
