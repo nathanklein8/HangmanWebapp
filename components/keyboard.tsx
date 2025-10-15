@@ -37,6 +37,10 @@ const Keyboard: React.FC<KeyboardProps> = ({
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (!disabled) {
+        // ignore things like cmd+r
+        if (event.ctrlKey || event.metaKey) {
+          return;
+        }
         const key = event.key.toUpperCase();
         if (key == ' ') {
           onNewGameClick();
@@ -56,7 +60,7 @@ const Keyboard: React.FC<KeyboardProps> = ({
   }, [onKeyClick]);
 
   return (
-    <div className="relative mb-4">
+    <div className="relative pb-4">
       <div className={cn(
         'flex flex-col items-center', blurred ? 'opacity-40' : ''
       )}>
@@ -103,7 +107,7 @@ const Keyboard: React.FC<KeyboardProps> = ({
           variant="altOutline"
           onClick={onNewGameClick}
         >
-         New Game
+          New Game
         </Button>
         : <></>}
     </div>

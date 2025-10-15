@@ -2,21 +2,10 @@
 #
 # override file for production deployment
 services:
-  db:
-    container_name: hangman-db-prod
-    volumes:
-      - db-data-prod:/var/lib/postgresql/data
 
   app:
-    container_name: hangman-app-prod
-    environment:
-      - ENV=prod # needed by docker-entrypoint.sh
     ports:
       - 3000:3000
 
 volumes:
   db-data-prod:
-
-networks:
-  default:
-    name: hangman-net-prod

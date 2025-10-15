@@ -20,7 +20,6 @@ import { WordStats } from "@/components/word-stats"
 import { toast } from "sonner"
 import { FetchGameState, SaveGameState, ClearGameState } from "@/lib/client-side-save"
 import { CalendarFold, Dices } from "lucide-react"
-import { setDailyGuesses } from "@/lib/cookies"
 
 export default function Home() {
 
@@ -128,7 +127,6 @@ export default function Home() {
         setHintLetters(prev => prev.concat([letter]))
       }
       if (new Set(secretWord).isSubsetOf(new Set(newGuesses))) {
-        // launchConfetti()
         setConfettiTrigger(true)
         setIsVictory(true)
       }
@@ -227,8 +225,8 @@ export default function Home() {
         : <></>}
 
       {isMobile // spacer to push keyboard to bottom of screen on mobile
-        ? <div className="flex grow"></div>
-        : <></>}
+        ? <div className="flex grow"/>
+        : <div className="h-1"/>}
 
       <div className="flex z-20 justify-around">
         <Confetti active={confettiTrigger} />

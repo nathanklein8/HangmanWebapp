@@ -13,15 +13,20 @@ on:
 jobs:
   deploy:
     runs-on: self-hosted
+
+    # set github secrets/vars environment
     environment:
       name: ${{ github.ref_name == 'main' && 'prod' || 'test' }}
+    
     env:
+      ENV: ${{ github.ref_name == 'main' && 'prod' || 'test' }}
+      PROXY_NET: 'nathan_default'
+
+      # used in compose files
       POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
       POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
       POSTGRES_DB: ${{ vars.POSTGRES_DB }}
       POSTGRES_PORT: ${{ vars.POSTGRES_PORT }}
-      ENV: ${{ github.ref_name == 'main' && 'prod' || 'test' }}
-      PROXY_NET: 'nathan_default'
 
     steps:
       - name: Checkout repo
@@ -37,23 +42,7 @@ jobs:
 
       - name: Connect App container to proxy network (prod only)
         if: env.ENV == 'prod'
-        run: |
-          CONTAINER_ID=$(docker compose \
-            -p hangman-prod \
-            -f docker-compose.base.yml \
-            -f docker-compose.prod.yml \
-            ps -q app)
-          if [ -n "$CONTAINER_ID" ]; then
-            if ! docker network inspect ${PROXY_NET} | grep -q "$CONTAINER_ID"; then
-              docker network connect ${PROXY_NET} "$CONTAINER_ID"
-              echo "Connected container to ${PROXY_NET}"
-            else
-              echo "Container already connected to ${PROXY_NET}"
-            fi
-          else
-            echo "App container not found"
-            exit 1
-          fi
+        run: docker network connect ${PROXY_NET} hangman-app-prod
 
       - name: Cleanup unused images
         run: docker image prune -f

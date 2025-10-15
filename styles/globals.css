@@ -98,8 +98,11 @@
     border-left-color: #ffffff;
     border-right-color: #ffffff;
     border-radius: 50%;
+  }
+  .spinner {
     animation: spin 0.75s ease-in-out infinite;
   }
+
 }
 
 @keyframes fadeInAnimation {
