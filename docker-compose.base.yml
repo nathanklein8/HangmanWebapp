@@ -17,7 +17,6 @@ services:
     image: ghcr.io/nathanklein8/hangmanwebapp:${IMAGE_TAG}
     restart: unless-stopped
     environment:
-      - ENV=${ENV}
       - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:${POSTGRES_PORT}/${POSTGRES_DB}
       - TZ=America/New_York
     depends_on:
