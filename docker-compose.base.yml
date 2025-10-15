@@ -15,7 +15,7 @@ services:
 
   app:
     build: .
-    image: ${IMAGE_NAME}
+    image: "${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}"
     restart: unless-stopped
     environment:
       - ENV=${ENV}
