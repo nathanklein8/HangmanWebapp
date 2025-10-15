@@ -62,5 +62,5 @@ ENV PORT=3000
 
 EXPOSE 3000
 
-ENTRYPOINT ["/docker-entrypoint.sh"]
+ENTRYPOINT ["./docker-entrypoint.sh"]
 CMD HOSTNAME="0.0.0.0" node server.js
