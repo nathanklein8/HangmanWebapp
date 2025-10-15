@@ -14,7 +14,7 @@ services:
       - TZ=America/New_York
 
   app:
-    image: ghcr.io/nathanklein8/hangmanwebapp:{$IMAGE_TAG}
+    image: ghcr.io/nathanklein8/hangmanwebapp:${IMAGE_TAG}
     restart: unless-stopped
     environment:
       - ENV=${ENV}
