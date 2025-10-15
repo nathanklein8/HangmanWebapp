@@ -7,3 +7,7 @@ services:
     ports:
       - 2999:3000
       - 5555:5555 # prisma studio
+
+volumes:
+  db-data-test:
+ 
