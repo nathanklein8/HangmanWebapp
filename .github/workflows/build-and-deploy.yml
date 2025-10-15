@@ -1,4 +1,4 @@
-name: Build Image and push to GHCR
+name: Build
 
 on:
   push:
@@ -45,9 +45,12 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=ref,event=branch
-            type=sha
+            # main branch → latest
             type=raw,value=latest,enable=${{ github.ref_name == 'main' }}
+            # test branch → test
+            type=raw,value=test,enable=${{ github.ref_name == 'test' }}
+            # always include a SHA tag for traceability
+            type=sha
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
@@ -75,3 +78,44 @@ jobs:
           subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}
           subject-digest: ${{ steps.build.outputs.digest }}
           push-to-registry: true
+
+  deploy:
+    needs: [build]
+    runs-on: self-hosted
+
+    # use correct github vars & secrets environemtns based on branch
+    environment:
+      name: ${{ github.ref_name == 'main' && 'prod' || 'test' }}
+
+    env:
+      PROXY_NET: "nathan_default"
+
+      # need to be set at build time
+      ENV: ${{ github.ref_name == 'main' && 'prod' || 'test' }}
+      POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+      POSTGRES_DB: ${{ vars.POSTGRES_DB }}
+      POSTGRES_PORT: ${{ vars.POSTGRES_PORT }}
+
+    steps:
+      - name: Deploy containers
+        run: |
+          docker compose \
+            -f docker-compose.base.yml \
+            -f docker-compose.${ENV}.yml \
+            stop
+          docker compose \
+            -f docker-compose.base.yml \
+            -f docker-compose.${ENV}.yml \
+            rm --force
+          docker compose \
+            -f docker-compose.base.yml \
+            -f docker-compose.${ENV}.yml \
+            up -d --remove-orphans
+
+      - name: Connect App container to proxy network (prod only)
+        if: env.ENV == 'prod'
+        run: docker network connect ${PROXY_NET} hangman-app-prod
+
+      - name: Cleanup unused images
+        run: docker image prune -f
