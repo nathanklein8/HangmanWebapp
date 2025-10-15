@@ -1,7 +1,6 @@
 import { failState } from "@/data/data"
 import { cn } from "@/lib/utils"
-import { Dices } from "lucide-react"
-import { isMobile } from "react-device-detect"
+import { LucideLoader2 } from "lucide-react"
 
 const RenderPhrase = (props: {
   phrase: string,
@@ -11,7 +10,14 @@ const RenderPhrase = (props: {
   hintLetters: Array<string>,
 }) => {
   if (props.phrase == "") {
-    return <div className="flex justify-center min-h-8"></div>
+    return <div className="flex flex-col items-center min-h-10 pt-2">
+      <p className="text-lg text-muted-foreground italic">
+            <span className="inline-flex align-middle">
+               <LucideLoader2 className="spinner" size={20}/>
+            </span>
+            {" "}loading word...
+          </p>
+    </div>
   }
   const text = (props.state == failState)
     ? props.phrase.toUpperCase()
@@ -24,7 +30,7 @@ const RenderPhrase = (props: {
     : "min-w-[28px] lg:min-w-[34px]"
   return (
     <div className={cn(
-      "flex flex-row justify-center min-h-8 gap-1",
+      "flex flex-row justify-center min-h-10 gap-1",
       textSize,
     )}>
       {Array.from(text).map((char, i) => {
