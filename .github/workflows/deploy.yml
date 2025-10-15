@@ -1,0 +1,48 @@
+name: Deploy App
+
+on:
+  push:
+    branches:
+      - main # prod
+      - test
+    # don't deploy on non code changes
+    paths-ignore:
+      - 'README.md'
+      - '**/README.md'
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    # set github secrets/vars environment
+    environment:
+      name: ${{ github.ref_name == 'main' && 'prod' || 'test' }}
+    
+    env:
+      ENV: ${{ github.ref_name == 'main' && 'prod' || 'test' }}
+      PROXY_NET: 'nathan_default'
+
+      # used in compose files
+      POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+      POSTGRES_DB: ${{ vars.POSTGRES_DB }}
+      POSTGRES_PORT: ${{ vars.POSTGRES_PORT }}
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Build and Start updated container
+        run: |
+          COMPOSE_BAKE=true docker compose \
+            -p hangman-${ENV} \
+            -f docker-compose.base.yml \
+            -f docker-compose.${ENV}.yml \
+            up -d --build --remove-orphans
+
+      - name: Connect App container to proxy network (prod only)
+        if: env.ENV == 'prod'
+        run: docker network connect ${PROXY_NET} hangman-app-prod
+
+      - name: Cleanup unused images
+        run: docker image prune -f

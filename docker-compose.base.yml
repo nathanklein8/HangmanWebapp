@@ -5,6 +5,7 @@
 services:
 
   db:
+    container_name: hangman-db-${ENV}
     image: postgres:17-alpine
     restart: unless-stopped
     environment:
@@ -12,14 +13,24 @@ services:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - TZ=America/New_York
+    volumes:
+      - db-data-${ENV}:/var/lib/postgresql/data
 
   app:
-    image: ghcr.io/nathanklein8/hangmanwebapp:${IMAGE_TAG}
+    container_name: hangman-app-${ENV}
+    build: .
     restart: unless-stopped
     environment:
+      - ENV=${ENV}
       - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:${POSTGRES_PORT}/${POSTGRES_DB}
       - TZ=America/New_York
     depends_on:
       - db
 
-# volumes + network defined in respective override file
+volumes:
+  db-data:
+    name: db-data-${ENV}
+
+networks:
+  default:
+    name: hangman-net-${ENV}
