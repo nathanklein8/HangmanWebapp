@@ -22392,11 +22392,8 @@ loudspeaker
 louisiana
 louisianan
 louisville
-loupgarou
 louvered
 lovastatin
-loveinamist
-loveinwinter
 lovetoken
 lovebird
 loveless
@@ -23494,7 +23491,6 @@ menacing
 menacingly
 menagerie
 menagery
-menarche
 mendacem
 mendacia
 mendacior
@@ -23530,10 +23526,6 @@ menorrhagia
 menorrhea
 menotyphla
 mensongesfrench
-menstrual
-menstruating
-menstruation
-menstruum
 mensural
 mensuration
 mentalism
