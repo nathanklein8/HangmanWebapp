@@ -91,7 +91,7 @@ const WordStats = (props: {
                   radius={5}
                   minPointSize={5}
                 >
-                  {stats.histogram.map((data, index) => (
+                  {stats.histogram.map((data: any, index: any) => (
                     <Cell
                       key={index}
                       fill={data.amount === "X" ? "#ef4444" : "var(--color-count)"}
