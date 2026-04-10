@@ -1,6 +1,6 @@
 "use client"
 
-import { Bar, BarChart, LabelList, XAxis, YAxis } from "recharts"
+import { BarChart, LabelList, XAxis, YAxis, Bar, Cell } from "recharts"
 import {
   ChartConfig,
   ChartContainer,
@@ -88,8 +88,15 @@ const WordStats = (props: {
                 <Bar
                   dataKey="count"
                   layout="vertical"
-                  fill="var(--color-count)"
-                  radius={5} >
+                  radius={5}
+                  minPointSize={5}
+                >
+                  {stats.histogram.map((data, index) => (
+                    <Cell
+                      key={index}
+                      fill={data.amount === "X" ? "#ef4444" : "var(--color-count)"}
+                    />
+                  ))}
                   <LabelList
                     dataKey="count"
                     position="right"

@@ -26,13 +26,11 @@ export async function GET(req: NextRequest) {
 
     const histogram: Record<number, number> = {};
     for (const attempt of attempts) {
-      if (attempt.won) {
-        histogram[attempt.mistakes] = (histogram[attempt.mistakes] || 0) + 1;
-      }
+      histogram[attempt.mistakes] = (histogram[attempt.mistakes] || 0) + 1;
     }
 
-    const chartData = Array.from({ length: 6 }, (_, i) => ({
-      amount: i.toString(),
+    const chartData = Array.from({ length: 7 }, (_, i) => ({
+      amount: (i === 6 ? "X" : i.toString()),
       count: histogram[i] ?? 0,
     }));
 
